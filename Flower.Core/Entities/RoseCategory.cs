@@ -3,7 +3,7 @@ namespace Flower.Core.Entities
 {
 	public class RoseCategory
 	{
-		public int FlowerId { get; set; }
+		public int RoseId { get; set; }
 
 		public int CategoryId { get; set; }
 

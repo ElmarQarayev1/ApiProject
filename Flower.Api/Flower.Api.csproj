@@ -24,12 +24,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Controllers\" />
+    <None Remove="MiddleWares\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="wwwroot\" />
     <Folder Include="wwwroot\uploads\" />
     <Folder Include="wwwroot\uploads\roses\" />
+    <Folder Include="MiddleWares\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\" />

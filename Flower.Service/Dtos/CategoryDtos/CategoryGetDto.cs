@@ -3,9 +3,9 @@ namespace Flower.Service.Dtos.CategoryDtos
 {
 	public class CategoryGetDto
 	{
-		public CategoryGetDto()
-		{
-		}
+		public string Name { get; set; }
+
+		public int RoseCount { get; set; }
 	}
 }
 

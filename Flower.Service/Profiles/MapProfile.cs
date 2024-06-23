@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using AutoMapper;
 using Flower.Core.Entities;
+using Flower.Service.Dtos.CategoryDtos;
 using Flower.Service.Dtos.RoseDtos;
 using Microsoft.AspNetCore.Http;
 
@@ -28,6 +29,12 @@ namespace Flower.Service.Profiles
             CreateMap<RoseCreateDto, Rose>();
             CreateMap<Rose, RoseDetailsDto>();
             CreateMap<Rose, RoseGetDto>();
+
+
+
+            CreateMap<Category, CategoryGetDto>();
+            CreateMap<CategoryGetDto, Category>();
+
 
             //CreateMap<Student, StudentDetailsDto>()
             //    .ForMember(dest => dest.GroupName, s => s.MapFrom(s => s.Group.No));

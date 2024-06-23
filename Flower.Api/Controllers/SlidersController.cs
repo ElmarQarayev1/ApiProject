@@ -5,9 +5,9 @@ namespace Flower.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController
+    public class SlidersController
 	{
-		public AuthController()
+		public SlidersController()
 		{
 		}
 	}

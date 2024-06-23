@@ -22,7 +22,7 @@ namespace Flower.Service.Dtos.RoseDtos
     {
         public RoseCreateDtoValidator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(35).MinimumLength(6);
+            RuleFor(x => x.Name).NotEmpty().MaximumLength(35).MinimumLength(2);
 
             RuleFor(x => x.Value).NotNull();
 

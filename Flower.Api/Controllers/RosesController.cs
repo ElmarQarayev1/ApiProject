@@ -5,10 +5,11 @@ namespace Flower.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController
+    public class RosesController
 	{
-		public AuthController()
+		public RosesController()
 		{
+
 		}
 	}
 }

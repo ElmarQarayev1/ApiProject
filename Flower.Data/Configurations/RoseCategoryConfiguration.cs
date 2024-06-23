@@ -11,12 +11,12 @@ namespace Flower.Data.Configurations
 
         public void Configure(EntityTypeBuilder<RoseCategory> builder)
         {
-            builder.HasKey(rc => new { rc.FlowerId, rc.CategoryId });
+            builder.HasKey(rc => new { rc.RoseId, rc.CategoryId });
 
             
             builder.HasOne(rc => rc.Rose)
                    .WithMany(r => r.RoseCategories)
-                   .HasForeignKey(rc => rc.FlowerId);
+                   .HasForeignKey(rc => rc.RoseId);
 
             builder.HasOne(rc => rc.Category)
                    .WithMany(c => c.RoseCategories)
