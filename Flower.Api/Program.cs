@@ -1,4 +1,9 @@
-﻿using Flower.Data;
+﻿using AutoMapper;
+using Flower.Data;
+using Flower.Service.Dtos.RoseDtos;
+using Flower.Service.Profiles;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,13 +16,21 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(provider => new MapperConfiguration(cf =>
+{
+    cf.AddProfile(new MapProfile(provider.GetService<IHttpContextAccessor>()));
+}).CreateMapper());
 
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<AppDbContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<RoseCreateDtoValidator>();
 
 var app = builder.Build();
 
