@@ -30,6 +30,8 @@ namespace Flower.Service.Dtos.RoseDtos
             RuleFor(x => x.Desc).NotEmpty().MaximumLength(200);
 
 
+         
+
             RuleFor(x => x.RoseCategories)
                 .Must(categories => categories == null || categories.Count == 0 || categories.Any(rc => rc.CategoryId.HasValue))
                 .WithMessage("If RoseCategories is provided, it must contain at least one valid CategoryId.")

@@ -31,8 +31,9 @@ namespace Flower.Service.Implementations
 
         public int Create(RoseCreateDto createDto)
         {
-            // Kategorileri al
+           
             var categoryIds = createDto.RoseCategories?.Select(rc => rc.CategoryId).ToList();
+
             List<Category> categories = new List<Category>();
 
             if (categoryIds != null && categoryIds.Any())
@@ -40,19 +41,21 @@ namespace Flower.Service.Implementations
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
             }
 
-            // Verilen kategori ID'leri doğrulama
+
+           
             if (categoryIds != null && categoryIds.Any() && categories.Count != categoryIds.Count)
             {
-                throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "Verilen ID'lerle bir veya daha fazla kategori bulunamadı");
+                throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
 
-            // Aynı isimde başka bir gül olup olmadığını kontrol et
+
+            
             if (_roseRepository.Exists(x => x.Name.ToUpper() == createDto.Name.ToUpper() && !x.IsDeleted))
             {
-                throw new RestException(StatusCodes.Status400BadRequest, "Name", "Verilen isme sahip başka bir gül zaten var");
+                throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
 
-            // Kategori ilişkilerini oluştur
+           
             var roseCategories = new List<RoseCategory>();
 
             if (createDto.RoseCategories != null && createDto.RoseCategories.Any())
@@ -66,31 +69,27 @@ namespace Flower.Service.Implementations
                         {
                             roseCategories.Add(new RoseCategory
                             {
-                                Category = category // Kategoriye referans ekle
+                                Category = category  
                             });
                         }
                     }
                 }
             }
 
-            // Gül oluştur
             Rose rose = new Rose
             {
                 Name = createDto.Name,
                 Desc = createDto.Desc,
                 Value = createDto.Value,
-                ImageName = FileManager.Save(createDto.File, _env.WebRootPath, "uploads/roses"), // Dosya yönetimini düzgün ayarlayın
-                RoseCategories = roseCategories // Kategori ilişkilerini ekle
+                ImageName = FileManager.Save(createDto.File, _env.WebRootPath, "uploads/roses"),
+                RoseCategories = roseCategories  
             };
 
-            // Gülü veritabanına ekle
             _roseRepository.Add(rose);
             _roseRepository.Save();
 
-            return rose.Id; // Oluşturulan gülün ID'sini döndür
+            return rose.Id;
         }
-
-
 
 
         public void Delete(int id)
