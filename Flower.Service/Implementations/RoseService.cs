@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using AutoMapper;
+using Flower.Core.Entities;
 using Flower.Data.Repositories.Interfaces;
 using Flower.Service.Dtos;
 using Flower.Service.Dtos.RoseDtos;
+using Flower.Service.Exceptions;
+using Flower.Service.Helpers;
 using Flower.Service.Interfaces;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace Flower.Service.Implementations
 {
@@ -25,33 +31,178 @@ namespace Flower.Service.Implementations
 
         public int Create(RoseCreateDto createDto)
         {
-            throw new NotImplementedException();
+            // Kategorileri al
+            var categoryIds = createDto.RoseCategories?.Select(rc => rc.CategoryId).ToList();
+            List<Category> categories = new List<Category>();
+
+            if (categoryIds != null && categoryIds.Any())
+            {
+                categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
+            }
+
+            // Verilen kategori ID'leri doğrulama
+            if (categoryIds != null && categoryIds.Any() && categories.Count != categoryIds.Count)
+            {
+                throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "Verilen ID'lerle bir veya daha fazla kategori bulunamadı");
+            }
+
+            // Aynı isimde başka bir gül olup olmadığını kontrol et
+            if (_roseRepository.Exists(x => x.Name.ToUpper() == createDto.Name.ToUpper() && !x.IsDeleted))
+            {
+                throw new RestException(StatusCodes.Status400BadRequest, "Name", "Verilen isme sahip başka bir gül zaten var");
+            }
+
+            // Kategori ilişkilerini oluştur
+            var roseCategories = new List<RoseCategory>();
+
+            if (createDto.RoseCategories != null && createDto.RoseCategories.Any())
+            {
+                foreach (var rc in createDto.RoseCategories)
+                {
+                    if (rc.CategoryId.HasValue)
+                    {
+                        var category = categories.FirstOrDefault(c => c.Id == rc.CategoryId.Value);
+                        if (category != null)
+                        {
+                            roseCategories.Add(new RoseCategory
+                            {
+                                Category = category // Kategoriye referans ekle
+                            });
+                        }
+                    }
+                }
+            }
+
+            // Gül oluştur
+            Rose rose = new Rose
+            {
+                Name = createDto.Name,
+                Desc = createDto.Desc,
+                Value = createDto.Value,
+                ImageName = FileManager.Save(createDto.File, _env.WebRootPath, "uploads/roses"), // Dosya yönetimini düzgün ayarlayın
+                RoseCategories = roseCategories // Kategori ilişkilerini ekle
+            };
+
+            // Gülü veritabanına ekle
+            _roseRepository.Add(rose);
+            _roseRepository.Save();
+
+            return rose.Id; // Oluşturulan gülün ID'sini döndür
         }
+
+
+
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            Rose entity = _roseRepository.Get(x => x.Id == id);
+
+            if (entity == null) throw new RestException(StatusCodes.Status404NotFound, "Rose not found");
+
+            _roseRepository.Delete(entity);
+
+            entity.IsDeleted = true;
+            entity.ModifiedAt = DateTime.Now;
+            _roseRepository.Save();
         }
+
 
         public List<RoseGetDto> GetAll(string? search = null)
         {
-            throw new NotImplementedException();
-        }
+            var roses = _roseRepository.GetAll(x => !x.IsDeleted && (search == null || x.Name.Contains(search))).ToList();
+            return _mapper.Map<List<RoseGetDto>>(roses);
 
+
+        }
         public PaginatedList<RoseGetDto> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
-            throw new NotImplementedException();
+            var query = _roseRepository.GetAll(x => !x.IsDeleted);
+
+            PaginatedList<Rose> roses = PaginatedList<Rose>.Create(query, page, size);
+
+            return new PaginatedList<RoseGetDto>(_mapper.Map<List<RoseGetDto>>(roses.Items), roses.TotalPages, roses.PageIndex, roses.PageSize);
         }
+
 
         public RoseDetailsDto GetById(int id)
         {
-            throw new NotImplementedException();
+            Rose rose = _roseRepository.Get(x => x.Id == id && !x.IsDeleted,"RoseCategories");
+
+            if (rose == null) throw new RestException(StatusCodes.Status404NotFound, "Rose not found");
+
+            return _mapper.Map<RoseDetailsDto>(rose);
         }
 
         public void Update(int id, RoseUpdateDto updateDto)
         {
-            throw new NotImplementedException();
+            Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories");
+
+            if (rose == null)
+            {
+                throw new RestException(StatusCodes.Status404NotFound, "RoseId", "Rose not found by given Id");
+            }
+
+            if (!string.Equals(rose.Name, updateDto.Name, StringComparison.OrdinalIgnoreCase) &&
+                _roseRepository.Exists(x => x.Name.ToUpper() == updateDto.Name.ToUpper() && x.Id != id && !x.IsDeleted))
+            {
+                throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
+            }
+
+            rose.Name = updateDto.Name;
+            rose.Desc = updateDto.Desc;
+            rose.Value = updateDto.Value;
+
+           
+            if (updateDto.RoseCategories != null)
+            {
+                var categoryIds = updateDto.RoseCategories.Select(rc => rc.CategoryId).ToList();
+
+               
+                List<Category> categories = new List<Category>();
+                if (categoryIds.Any())
+                {
+                    categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
+                }
+
+                
+                if (categoryIds.Any() && categories.Count != categoryIds.Count)
+                {
+                    throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
+                }
+      
+                rose.RoseCategories.Clear();
+      
+                foreach (var rc in updateDto.RoseCategories)
+                {
+                    if (rc.CategoryId.HasValue)
+                    {
+                        rose.RoseCategories.Add(new RoseCategory
+                        {
+                            CategoryId = rc.CategoryId.Value
+                        });
+                    }
+                }
+            }
+
+            string deletedFile = null;
+
+           
+            if (updateDto.File != null)
+            {
+                deletedFile = rose.ImageName;
+                rose.ImageName = FileManager.Save(updateDto.File, _env.WebRootPath, "uploads/roses");
+            }
+
+            rose.ModifiedAt = DateTime.Now;
+            _roseRepository.Save();
+
+            if (deletedFile != null)
+            {
+                FileManager.Delete(_env.WebRootPath, "uploads/roses", deletedFile);
+            }
         }
+
+
     }
 }
 

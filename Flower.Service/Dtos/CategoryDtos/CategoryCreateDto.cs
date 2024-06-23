@@ -14,6 +14,7 @@ namespace Flower.Service.Dtos.CategoryDtos
     public class RoseCategoryDto
     {
         public int? RoseId { get; set; }
+       
     }
 
     public class CategoryCreateDtoValidator : AbstractValidator<CategoryCreateDto>

@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Flower.Service.Profiles
 {
-	public class MapProfile:Profile
-	{
+    public class MapProfile : Profile
+    {
         private readonly IHttpContextAccessor _context;
 
         public MapProfile(IHttpContextAccessor httpContextAccessor)
@@ -25,24 +25,18 @@ namespace Flower.Service.Profiles
             string baseUrl = uriBuilder.Uri.AbsoluteUri;
 
             CreateMap<Rose, RoseCreateDto>()
-            .ForMember(dest => dest.RoseCategories, s => s.MapFrom(s => s.RoseCategories));
+                .ForMember(dest => dest.RoseCategories, opt => opt.MapFrom(src => src.RoseCategories));
             CreateMap<RoseCreateDto, Rose>();
             CreateMap<Rose, RoseDetailsDto>();
-            CreateMap<Rose, RoseGetDto>();
 
-
+            CreateMap<Rose, RoseGetDto>()
+                .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "uploads/roses/" + src.ImageName))
+                .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
 
             CreateMap<Category, CategoryGetDto>();
             CreateMap<CategoryGetDto, Category>();
-
-
-            //CreateMap<Student, StudentDetailsDto>()
-            //    .ForMember(dest => dest.GroupName, s => s.MapFrom(s => s.Group.No));
-            //CreateMap<Student, StudentGetDto>()
-            //  .ForMember(dest => dest.Age, s => s.MapFrom(s => DateTime.Now.Year - s.BirthDate.Year))
-            //  .ForMember(dest => dest.ImageUrl, s => s.MapFrom(s => baseUrl + "uploads/students/" + s.FileName));
-
         }
     }
+
 }
 

@@ -12,9 +12,9 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public string Desc { get; set; }
 
-        public IFormFile File { get; set; }
+        public string File { get; set; }
 
-        public List<RoseCategory>? RoseCategories { get; set; }
+        public List<CategoryRoseDto> CategoryIds { get; set; }
     }
 }
 
