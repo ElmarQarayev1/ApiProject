@@ -33,10 +33,12 @@
     <Folder Include="wwwroot\uploads\" />
     <Folder Include="wwwroot\uploads\roses\" />
     <Folder Include="MiddleWares\" />
+    <Folder Include="wwwroot\uploads\sliders\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="wwwroot\" />
     <Content Remove="wwwroot\uploads\" />
     <Content Remove="wwwroot\uploads\roses\" />
+    <Content Remove="wwwroot\uploads\sliders\" />
   </ItemGroup>
 </Project>

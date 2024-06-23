@@ -72,6 +72,8 @@ builder.Services.AddScoped<IRoseRepository, RoseRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ISliderRepository, SliderRepository>();
+builder.Services.AddScoped<ISliderService, SliderService>();
 
 
 

@@ -13,9 +13,9 @@ namespace Flower.Api.Controllers
 
         private readonly ICategoryService _categoryService;
 
-        public CategoriesController(ICategoryService groupService)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _categoryService = groupService;
+            _categoryService = categoryService;
         }
 
         [HttpPost("")]

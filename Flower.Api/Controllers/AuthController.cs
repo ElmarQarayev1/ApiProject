@@ -25,7 +25,6 @@ namespace Flower.Api.Controllers
 
         }
 
-
         [HttpGet("users")]
         public async Task<IActionResult> CreateUser()
         {
@@ -55,7 +54,6 @@ namespace Flower.Api.Controllers
 
             return Ok(user1.Id);
         }
-
 
         [HttpPost("login")]
         public ActionResult Login(UserLoginDto loginDto)
