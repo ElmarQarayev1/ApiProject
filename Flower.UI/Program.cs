@@ -1,4 +1,6 @@
 ﻿using Flower.UI.Filter;
+using Flower.UI.Middleawares;
+using Flower.UI.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<AuthFilter>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICrudService, CrudService>();
 
 var app = builder.Build();
 
@@ -28,6 +31,8 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 app.Run();
 
