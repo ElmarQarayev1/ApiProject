@@ -29,19 +29,17 @@ namespace Flower.Service.Implementations
             _env = env;
         }
 
-
         public int Create(RoseCreateDto createDto)
         {
-           
+            
             var categoryIds = createDto.RoseCategories?.Select(rc => rc.CategoryId).ToList();
-
             List<Category> categories = new List<Category>();
 
+            
             if (categoryIds != null && categoryIds.Any())
             {
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
             }
-
 
            
             if (categoryIds != null && categoryIds.Any() && categories.Count != categoryIds.Count)
@@ -49,14 +47,13 @@ namespace Flower.Service.Implementations
                 throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
 
-
-            
+          
             if (_roseRepository.Exists(x => x.Name.ToUpper() == createDto.Name.ToUpper() && !x.IsDeleted))
             {
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
 
-           
+          
             var roseCategories = new List<RoseCategory>();
 
             if (createDto.RoseCategories != null && createDto.RoseCategories.Any())
@@ -70,27 +67,52 @@ namespace Flower.Service.Implementations
                         {
                             roseCategories.Add(new RoseCategory
                             {
-                                Category = category  
+                                Category = category
                             });
                         }
                     }
                 }
             }
 
+         
             Rose rose = new Rose
             {
                 Name = createDto.Name,
                 Desc = createDto.Desc,
                 Value = createDto.Value,
-                ImageName = FileManager.Save(createDto.File, _env.WebRootPath, "uploads/roses"),
-                RoseCategories = roseCategories  
+                RoseCategories = roseCategories
             };
+
+           
+            if (createDto.Files != null && createDto.Files.Any())
+            {
+                var pictures = new List<Picture>();
+                foreach (var file in createDto.Files)
+                {
+                    if (file.Length > 0)
+                    {
+                        var filePath = Path.Combine(_env.WebRootPath, "uploads/roses", file.FileName);
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(stream);
+                        }
+
+                        pictures.Add(new Picture
+                        {
+                            ImageName = file.FileName,
+                            Rose = rose 
+                        });
+                    }
+                }
+                rose.Pictures = pictures;
+            }
 
             _roseRepository.Add(rose);
             _roseRepository.Save();
 
             return rose.Id;
         }
+
 
 
         public void Delete(int id)
@@ -135,7 +157,7 @@ namespace Flower.Service.Implementations
 
         public void Update(int id, RoseUpdateDto updateDto)
         {
-            Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories");
+            Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories", "Pictures");
 
             if (rose == null)
             {
@@ -152,26 +174,23 @@ namespace Flower.Service.Implementations
             rose.Desc = updateDto.Desc;
             rose.Value = updateDto.Value;
 
-           
             if (updateDto.RoseCategories != null)
             {
                 var categoryIds = updateDto.RoseCategories.Select(rc => rc.CategoryId).ToList();
 
-               
                 List<Category> categories = new List<Category>();
                 if (categoryIds.Any())
                 {
                     categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
                 }
 
-                
                 if (categoryIds.Any() && categories.Count != categoryIds.Count)
                 {
                     throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
                 }
-      
+
                 rose.RoseCategories.Clear();
-      
+
                 foreach (var rc in updateDto.RoseCategories)
                 {
                     if (rc.CategoryId.HasValue)
@@ -184,19 +203,44 @@ namespace Flower.Service.Implementations
                 }
             }
 
-            string deletedFile = null;
+            List<string> deletedFiles = new List<string>();
 
-           
-            if (updateDto.File != null)
+            if (updateDto.Files != null && updateDto.Files.Any())
             {
-                deletedFile = rose.ImageName;
-                rose.ImageName = FileManager.Save(updateDto.File, _env.WebRootPath, "uploads/roses");
+                // Eski resimleri sil
+                foreach (var picture in rose.Pictures)
+                {
+                    deletedFiles.Add(picture.ImageName);
+                }
+
+                rose.Pictures.Clear();
+
+                foreach (var formFile in updateDto.Files)
+                {
+                    if (formFile.Length > 0)
+                    {
+                        var filePath = Path.Combine("wwwroot/uploads/roses", formFile.FileName);
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            formFile.CopyTo(stream);
+                        }
+
+                        var picture = new Picture
+                        {
+                            ImageName = formFile.FileName,
+                            Rose = rose
+                        };
+
+                        rose.Pictures.Add(picture);
+                    }
+                }
             }
 
             rose.ModifiedAt = DateTime.Now;
             _roseRepository.Save();
 
-            if (deletedFile != null)
+            foreach (var deletedFile in deletedFiles)
             {
                 FileManager.Delete(_env.WebRootPath, "uploads/roses", deletedFile);
             }

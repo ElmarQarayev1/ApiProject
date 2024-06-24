@@ -20,6 +20,8 @@ namespace Flower.Data
 
         public DbSet<AppUser> AppUsers { get; set; }
 
+        public DbSet<Picture> Pictures { get; set; }
+
         public DbSet<RoseCategory> RoseCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +29,7 @@ namespace Flower.Data
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
             modelBuilder.ApplyConfiguration(new RoseConfiguration());
             modelBuilder.ApplyConfiguration(new RoseCategoryConfiguration());
+            modelBuilder.ApplyConfiguration(new PictureConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }

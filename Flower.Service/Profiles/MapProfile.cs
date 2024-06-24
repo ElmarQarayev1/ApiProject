@@ -26,22 +26,21 @@ namespace Flower.Service.Profiles
             string baseUrl = uriBuilder.Uri.AbsoluteUri;
 
             CreateMap<Rose, RoseCreateDto>()
-                .ForMember(dest => dest.RoseCategories, opt => opt.MapFrom(src => src.RoseCategories));
+                .ForMember(dest => dest.RoseCategories, opt => opt.MapFrom(src => src.RoseCategories))
+                .ForMember(dest => dest.Files, opt => opt.Ignore());
+
             CreateMap<RoseCreateDto, Rose>();
             CreateMap<Rose, RoseDetailsDto>();
 
+
             CreateMap<Rose, RoseGetDto>()
-                .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "uploads/roses/" + src.ImageName))
-                .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
-
-
+             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Pictures.Select(p => baseUrl + "uploads/roses/" + p.ImageName)))
+              .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
 
 
 
             CreateMap<Category, CategoryGetDto>();
             CreateMap<CategoryGetDto, Category>();
-
-
 
 
 

@@ -9,9 +9,9 @@ namespace Flower.Core.Entities
 
 		public string Desc { get; set; }
 
-		public string ImageName { get; set; }
+	    public List<Picture>? Pictures { get; set; }
 
-	   public List<RoseCategory>? RoseCategories { get; set; }
+        public List<RoseCategory>? RoseCategories { get; set; }
 
 	}
 }

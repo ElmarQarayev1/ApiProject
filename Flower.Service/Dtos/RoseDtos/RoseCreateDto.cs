@@ -9,9 +9,12 @@ namespace Flower.Service.Dtos.RoseDtos
     public class RoseCreateDto
     {
         public string Name { get; set; }
+
         public double Value { get; set; }
+
         public string Desc { get; set; }
-        public IFormFile File { get; set; }
+
+        public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
         public List<CategoryRoseDto>? RoseCategories { get; set; }
     }
@@ -39,11 +42,11 @@ namespace Flower.Service.Dtos.RoseDtos
 
 
 
-            RuleFor(x => x.File)
-                .Must(file => file == null || file.Length <= 2 * 1024 * 1024)
-                .WithMessage("File must be less than or equal to 2MB.")
-                .Must(file => file == null || new[] { "image/png", "image/jpeg" }.Contains(file.ContentType))
-                .WithMessage("File type must be png, jpeg, or jpg.");
+            RuleForEach(x => x.Files)
+                .Must(file => file.Length <= 2 * 1024 * 1024)
+                .WithMessage("Each file must be less than or equal to 2MB.")
+                .Must(file => new[] { "image/png", "image/jpeg" }.Contains(file.ContentType))
+                .WithMessage("Each file type must be png, jpeg, or jpg.");
         }
     }
 }
