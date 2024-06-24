@@ -34,14 +34,13 @@ namespace Flower.Service.Profiles
 
 
             CreateMap<Rose, RoseGetDto>()
-             .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Pictures.Select(p => baseUrl + "uploads/roses/" + p.ImageName)))
-              .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
+                    .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Pictures.Select(p => baseUrl + "/uploads/roses/" + p.ImageName)))
+                   .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
 
 
 
             CreateMap<Category, CategoryGetDto>();
             CreateMap<CategoryGetDto, Category>();
-
 
 
 

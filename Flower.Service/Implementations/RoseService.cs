@@ -133,9 +133,8 @@ namespace Flower.Service.Implementations
         {
             var roses = _roseRepository.GetAll(x => !x.IsDeleted && (search == null || x.Name.Contains(search))).ToList();
             return _mapper.Map<List<RoseGetDto>>(roses);
-
-
         }
+
         public PaginatedList<RoseGetDto> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
             var query = _roseRepository.GetAll(x => !x.IsDeleted);
@@ -144,6 +143,7 @@ namespace Flower.Service.Implementations
 
             return new PaginatedList<RoseGetDto>(_mapper.Map<List<RoseGetDto>>(roses.Items), roses.TotalPages, roses.PageIndex, roses.PageSize);
         }
+
 
 
         public RoseDetailsDto GetById(int id)
