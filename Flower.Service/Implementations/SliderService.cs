@@ -75,16 +75,16 @@ namespace Flower.Service.Implementations
 
         }
 
-        public PaginatedList<SliderGetDto> GetAllByPage(string? search = null, int page = 1, int size = 10)
+        public PaginatedList<SliderPaginatedGet> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
             var query = _sliderRepository.GetAll(x => x.Title.Contains(search) || search == null);
 
 
             var paginated = PaginatedList<Slider>.Create(query, page, size);
 
-            var sliderDtos = _mapper.Map<List<SliderGetDto>>(paginated.Items);
+            var sliderDtos = _mapper.Map<List<SliderPaginatedGet>>(paginated.Items);
 
-            return new PaginatedList<SliderGetDto>(sliderDtos, paginated.TotalPages, page, size);
+            return new PaginatedList<SliderPaginatedGet>(sliderDtos, paginated.TotalPages, page, size);
         }
 
         public SliderGetDto GetById(int id)

@@ -26,33 +26,35 @@ namespace Flower.Service.Profiles
             string baseUrl = uriBuilder.Uri.AbsoluteUri;
 
             CreateMap<Rose, RoseCreateDto>()
-                .ForMember(dest => dest.RoseCategories, opt => opt.MapFrom(src => src.RoseCategories))
+                .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories))
                 .ForMember(dest => dest.Files, opt => opt.Ignore());
 
             CreateMap<RoseCreateDto, Rose>();
             CreateMap<Rose, RoseDetailsDto>();
 
+            CreateMap<Rose, RoseGetDto>().ReverseMap();
 
-            CreateMap<Rose, RoseGetDto>()
-                    .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Pictures.Select(p => baseUrl + "/uploads/roses/" + p.ImageName)))
-                   .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => new CategoryRoseDto { CategoryId = rc.CategoryId })));
-
-
-
-            CreateMap<Category, CategoryGetDto>();
-            CreateMap<CategoryGetDto, Category>();
+            CreateMap<Rose,RosePaginatedGet>().
+                ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
 
 
-            CreateMap<Slider, SliderCreateDto>();
-            CreateMap<SliderCreateDto, Slider>();
+            CreateMap<Category, CategoryGetDto>().ReverseMap();
+            CreateMap<Category, CategoryPaginatedGet>();
+
+
+
+            CreateMap<Slider, SliderCreateDto>().ReverseMap();
+            CreateMap<Slider, SliderPaginatedGet>()
+                 .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
+
+
 
             CreateMap<Slider, SliderGetDto>()
                 .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
 
 
-
-
+            
         }
     }
 

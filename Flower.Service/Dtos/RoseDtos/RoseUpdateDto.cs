@@ -15,7 +15,7 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
-        public List<CategoryRoseDto>? RoseCategories { get; set; }
+        public List<int>? CategoryIds { get; set; }
     }
 
     public class RoseUpdateDtoValidator : AbstractValidator<RoseUpdateDto>
@@ -27,12 +27,6 @@ namespace Flower.Service.Dtos.RoseDtos
             RuleFor(x => x.Value).NotNull();
 
             RuleFor(x => x.Desc).NotEmpty().MaximumLength(200);
-
-
-            RuleFor(x => x.RoseCategories)
-                .Must(categories => categories == null || categories.Count == 0 || categories.Any(rc => rc.CategoryId.HasValue))
-                .WithMessage("If RoseCategories is provided, it must contain at least one valid CategoryId.")
-                .When(x => x.RoseCategories != null);
 
 
             RuleForEach(x => x.Files)

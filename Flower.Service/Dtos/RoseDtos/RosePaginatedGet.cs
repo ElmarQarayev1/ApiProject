@@ -1,18 +1,17 @@
 ﻿using System;
-using Flower.Core.Entities;
-using Microsoft.AspNetCore.Http;
-
 namespace Flower.Service.Dtos.RoseDtos
 {
-	public class RoseGetDto
+	public class RosePaginatedGet
 	{
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
         public double Value { get; set; }
 
         public string Desc { get; set; }
 
-       
+        public List<int> CategoryIds { get; set; }
     }
 }
 

@@ -10,6 +10,7 @@ using Flower.Service.Helpers;
 using Flower.Service.Interfaces;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 
 namespace Flower.Service.Implementations
@@ -31,50 +32,30 @@ namespace Flower.Service.Implementations
 
         public int Create(RoseCreateDto createDto)
         {
-            
-            var categoryIds = createDto.RoseCategories?.Select(rc => rc.CategoryId).ToList();
             List<Category> categories = new List<Category>();
+                var categoryIds = createDto.CategoryIds?.ToList();
 
-            
-            if (categoryIds != null && categoryIds.Any())
-            {
+                if (categoryIds != null)
+                {
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
-            }
+                }
 
            
-            if (categoryIds != null && categoryIds.Any() && categories.Count != categoryIds.Count)
+            if (categoryIds == null || categories.Count == 0)
             {
                 throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
 
-          
+
             if (_roseRepository.Exists(x => x.Name.ToUpper() == createDto.Name.ToUpper() && !x.IsDeleted))
             {
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
 
           
-            var roseCategories = new List<RoseCategory>();
+            var roseCategories = createDto.CategoryIds.Select(x => new RoseCategory { CategoryId = x }).ToList();
 
-            if (createDto.RoseCategories != null && createDto.RoseCategories.Any())
-            {
-                foreach (var rc in createDto.RoseCategories)
-                {
-                    if (rc.CategoryId.HasValue)
-                    {
-                        var category = categories.FirstOrDefault(c => c.Id == rc.CategoryId.Value);
-                        if (category != null)
-                        {
-                            roseCategories.Add(new RoseCategory
-                            {
-                                Category = category
-                            });
-                        }
-                    }
-                }
-            }
 
-         
             Rose rose = new Rose
             {
                 Name = createDto.Name,
@@ -112,8 +93,8 @@ namespace Flower.Service.Implementations
 
             return rose.Id;
         }
-
-
+       
+      
 
         public void Delete(int id)
         {
@@ -135,16 +116,15 @@ namespace Flower.Service.Implementations
             return _mapper.Map<List<RoseGetDto>>(roses);
         }
 
-        public PaginatedList<RoseGetDto> GetAllByPage(string? search = null, int page = 1, int size = 10)
+
+        public PaginatedList<RosePaginatedGet> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
-            var query = _roseRepository.GetAll(x => !x.IsDeleted);
+            var query = _roseRepository.GetAll(x => !x.IsDeleted,"RoseCategories");
 
             PaginatedList<Rose> roses = PaginatedList<Rose>.Create(query, page, size);
 
-            return new PaginatedList<RoseGetDto>(_mapper.Map<List<RoseGetDto>>(roses.Items), roses.TotalPages, roses.PageIndex, roses.PageSize);
+            return new PaginatedList<RosePaginatedGet>(_mapper.Map<List<RosePaginatedGet>>(roses.Items), roses.TotalPages, roses.PageIndex, roses.PageSize);
         }
-
-
 
         public RoseDetailsDto GetById(int id)
         {
@@ -157,6 +137,21 @@ namespace Flower.Service.Implementations
 
         public void Update(int id, RoseUpdateDto updateDto)
         {
+            List<Category> categories = new List<Category>();
+            var categoryIds = updateDto.CategoryIds?.Select(rc => rc).ToList();
+
+
+            if (categoryIds != null && categoryIds.Any())
+            {
+                categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
+            }
+
+            if (categoryIds == null || categories.Count == 0)
+            {
+                throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
+            }
+
+
             Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories", "Pictures");
 
             if (rose == null)
@@ -169,45 +164,20 @@ namespace Flower.Service.Implementations
             {
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
+            var roseCategories = updateDto.CategoryIds.Select(x => new RoseCategory { CategoryId = x }).ToList();
 
             rose.Name = updateDto.Name;
             rose.Desc = updateDto.Desc;
             rose.Value = updateDto.Value;
+            rose.RoseCategories = roseCategories;
+            
 
-            if (updateDto.RoseCategories != null)
-            {
-                var categoryIds = updateDto.RoseCategories.Select(rc => rc.CategoryId).ToList();
-
-                List<Category> categories = new List<Category>();
-                if (categoryIds.Any())
-                {
-                    categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
-                }
-
-                if (categoryIds.Any() && categories.Count != categoryIds.Count)
-                {
-                    throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
-                }
-
-                rose.RoseCategories.Clear();
-
-                foreach (var rc in updateDto.RoseCategories)
-                {
-                    if (rc.CategoryId.HasValue)
-                    {
-                        rose.RoseCategories.Add(new RoseCategory
-                        {
-                            CategoryId = rc.CategoryId.Value
-                        });
-                    }
-                }
-            }
 
             List<string> deletedFiles = new List<string>();
 
             if (updateDto.Files != null && updateDto.Files.Any())
             {
-                // Eski resimleri sil
+               
                 foreach (var picture in rose.Pictures)
                 {
                     deletedFiles.Add(picture.ImageName);

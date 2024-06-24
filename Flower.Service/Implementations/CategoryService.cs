@@ -60,23 +60,22 @@ namespace Flower.Service.Implementations
             _categoryRepository.Save();
         }
 
-
         public List<CategoryGetDto> GetAll(string? search = null)
         {
             var categories = _categoryRepository.GetAll(x => search == null || x.Name.Contains(search)).ToList();
             return _mapper.Map<List<CategoryGetDto>>(categories);
         }
 
-        public PaginatedList<CategoryGetDto> GetAllByPage(string? search = null, int page = 1, int size = 10)
+        public PaginatedList<CategoryPaginatedGet> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
             var query = _categoryRepository.GetAll(x => x.Name.Contains(search) || search == null, "RoseCategories");
 
 
             var paginated = PaginatedList<Category>.Create(query, page, size);
 
-            var categoryDtos = _mapper.Map<List<CategoryGetDto>>(paginated.Items);
+            var categoryDtos = _mapper.Map<List<CategoryPaginatedGet>>(paginated.Items);
 
-            return new PaginatedList<CategoryGetDto>(categoryDtos, paginated.TotalPages, page, size);
+            return new PaginatedList<CategoryPaginatedGet>(categoryDtos, paginated.TotalPages, page, size);
         }
 
         public CategoryGetDto GetById(int id)
