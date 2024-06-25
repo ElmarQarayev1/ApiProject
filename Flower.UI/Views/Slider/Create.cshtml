@@ -1,0 +1,50 @@
+﻿@model SliderCreateRequest
+@{
+    ViewData["Title"] = "Create";
+}
+
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Students</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            Create
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <form class="user" asp-action="create" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="noInput">Title</label>
+                    <input asp-for="Title" class="form-control" id="FullNameInput" placeholder="Enter Name here..">
+                    <span class="text-danger" asp-validation-for="Title"></span>
+                </div>
+              
+                <div class="form-group">
+                    <label for="limitInput">Desc</label>
+                    <textarea asp-for="Desc" class="form-control" id="EmailInput" placeholder="Enter Desc here.."></textarea>
+                    <span class="text-danger" asp-validation-for="Desc"></span>
+                </div>
+                <div class="form-group">
+                    <label for="limitInput">Order</label>
+                    <input asp-for="Order" class="form-control" id="BirthDateInput">
+                    <span class="text-danger" asp-validation-for="Order"></span>
+                </div>
+                <div class="form-group">
+                    <label for="limitInput">File</label>
+                    <input asp-for="File" class="form-control" id="FileInput">
+                    <span class="text-danger" asp-validation-for="File"></span>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    Create Slider
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Html.Partial("_ValidationScriptsPartial");
+}

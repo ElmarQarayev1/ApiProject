@@ -16,6 +16,8 @@
     <None Remove="Exception\" />
     <None Remove="Middleawares\" />
     <None Remove="Views\Category\" />
+    <None Remove="Views\Slider\" />
+    <None Remove="Views\Rose\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Filter\" />
@@ -25,5 +27,7 @@
     <Folder Include="Exception\" />
     <Folder Include="Middleawares\" />
     <Folder Include="Views\Category\" />
+    <Folder Include="Views\Slider\" />
+    <Folder Include="Views\Rose\" />
   </ItemGroup>
 </Project>

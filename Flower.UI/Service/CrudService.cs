@@ -46,8 +46,8 @@ namespace Flower.UI.Service
             }
         }
 
-            public async Task<CreateResponse> CreateFromForm<TRequest>(TRequest request, string path)
-            {
+        public async Task<CreateResponse> CreateFromForm<TRequest>(TRequest request, string path)
+        {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
             _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, _httpContextAccessor.HttpContext.Request.Cookies["token"]);
 
@@ -58,12 +58,9 @@ namespace Flower.UI.Service
 
                 if (val is IFormFile file)
                     content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
-                else if (val is DateTime dateTime)
-                    content.Add(new StringContent(dateTime.ToLongDateString()), prop.Name);
                 else if (val is not null)
                     content.Add(new StringContent(val.ToString()), prop.Name);
             }
-
             using (HttpResponseMessage response = await _client.PostAsync(baseUrl + path, content))
             {
                 var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
