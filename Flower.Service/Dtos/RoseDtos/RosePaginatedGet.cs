@@ -1,4 +1,6 @@
 ﻿using System;
+using Flower.Core.Entities;
+
 namespace Flower.Service.Dtos.RoseDtos
 {
 	public class RosePaginatedGet
@@ -10,6 +12,7 @@ namespace Flower.Service.Dtos.RoseDtos
         public double Value { get; set; }
 
         public string Desc { get; set; }
+
 
         public List<int> CategoryIds { get; set; }
     }

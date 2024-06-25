@@ -33,6 +33,7 @@ namespace Flower.Service.Implementations
         public int Create(RoseCreateDto createDto)
         {
             List<Category> categories = new List<Category>();
+
                 var categoryIds = createDto.CategoryIds?.ToList();
 
                 if (categoryIds != null)
@@ -128,7 +129,7 @@ namespace Flower.Service.Implementations
 
         public RoseDetailsDto GetById(int id)
         {
-            Rose rose = _roseRepository.Get(x => x.Id == id && !x.IsDeleted,"RoseCategories");
+            Rose rose = _roseRepository.Get(x => x.Id == id && !x.IsDeleted,"RoseCategories","Pictures");
 
             if (rose == null) throw new RestException(StatusCodes.Status404NotFound, "Rose not found");
 
@@ -138,13 +139,14 @@ namespace Flower.Service.Implementations
         public void Update(int id, RoseUpdateDto updateDto)
         {
             List<Category> categories = new List<Category>();
-            var categoryIds = updateDto.CategoryIds?.Select(rc => rc).ToList();
 
+            var categoryIds = updateDto.CategoryIds?.ToList();
 
-            if (categoryIds != null && categoryIds.Any())
+            if (categoryIds != null)
             {
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
             }
+
 
             if (categoryIds == null || categories.Count == 0)
             {
@@ -206,6 +208,7 @@ namespace Flower.Service.Implementations
                     }
                 }
             }
+
 
             rose.ModifiedAt = DateTime.Now;
             _roseRepository.Save();
