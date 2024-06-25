@@ -5,7 +5,7 @@ namespace Flower.UI.Service
 {
 	public interface ICrudService
 	{
-        Task<PaginatedResponse<TResponse>> GetAllPaginated<TResponse>(string path, int page);
+        Task<PaginatedResponse<TResponse>> GetAllPaginated<TResponse>(string path, int page, int size = 10);
         Task<TResponse> Get<TResponse>(string path);
         Task<CreateResponse> Create<TRequest>(TRequest request, string path);
         Task Update<TRequest>(TRequest request, string path);

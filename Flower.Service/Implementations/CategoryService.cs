@@ -30,10 +30,9 @@ namespace Flower.Service.Implementations
             if (_categoryRepository.Exists(x => x.Name == createDto.Name))
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Name already taken");
 
-            var roseCategories = createDto.RoseCategories?
-        .Where(rc => rc.RoseId.HasValue) 
-        .Select(rc => new RoseCategory { RoseId = rc.RoseId.Value }) 
-        .ToList();
+            var roseCategories = createDto.RoseIds?
+                .Select(roseId => new RoseCategory { RoseId = roseId })
+                .ToList();
 
             var entity = new Category
             {
@@ -46,9 +45,9 @@ namespace Flower.Service.Implementations
 
             return entity.Id;
         }
+    
 
-
-        public void Delete(int id)
+    public void Delete(int id)
         {
             Category entity = _categoryRepository.Get(x => x.Id == id);
 
@@ -100,16 +99,19 @@ namespace Flower.Service.Implementations
 
             entity.Name = updateDto.Name;
 
-            if (updateDto.RoseCategories != null)
+            if (updateDto.RoseIds != null)
             {
-                entity.RoseCategories = updateDto.RoseCategories
-                    .Where(rc => rc.RoseId.HasValue) 
-                    .Select(rc => new RoseCategory { RoseId = rc.RoseId.Value, CategoryId = id }) 
+               
+                entity.RoseCategories.Clear();
+
+               
+                entity.RoseCategories = updateDto.RoseIds
+                    .Select(roseId => new RoseCategory { RoseId = roseId, CategoryId = id })
                     .ToList();
             }
             else
             {
-                entity.RoseCategories = null; 
+                entity.RoseCategories = null;
             }
 
             _categoryRepository.Save();

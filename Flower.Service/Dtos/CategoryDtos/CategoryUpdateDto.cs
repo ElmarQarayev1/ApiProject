@@ -8,7 +8,7 @@ namespace Flower.Service.Dtos.CategoryDtos
 	{
         public string Name { get; set; }
 
-        public List<RoseCategoryDto>? RoseCategories { get; set; }
+        public List<int>? RoseIds { get; set; }
     }
 
     public class CategoryUpdateDtoValidator : AbstractValidator<CategoryUpdateDto>
@@ -16,22 +16,7 @@ namespace Flower.Service.Dtos.CategoryDtos
         public CategoryUpdateDtoValidator()
         {
             RuleFor(x => x.Name).NotEmpty().MaximumLength(35).MinimumLength(2);
-
-            RuleForEach(x => x.RoseCategories)
-               .Must((dto, roseCategory) =>
-               {
-
-                   if (!roseCategory.RoseId.HasValue && roseCategory.GetType().GetProperties().All(
-                       p => p.Name == "RoseId" || p.GetValue(roseCategory) == null))
-                       return true;
-
-
-                   if (roseCategory.RoseId.HasValue)
-                       return true;
-
-                   return false;
-               })
-               .WithMessage("Each RoseCategory must have a valid RoseId if provided.");
+            RuleForEach(x => x.RoseIds).NotEmpty().GreaterThan(0);
         }
 
     }

@@ -3,12 +3,13 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Flower.UI.Models
 {
-	public class CategoryCreateRequest
+	public class CategoryEditRequest
 	{
         [Required]
-        [MinLength(2)]    
+        [MinLength(2)]
         public string Name { get; set; }
-    
+
+        public List<int> RoseIds { get; set; } = new List<int>();
     }
 }
 

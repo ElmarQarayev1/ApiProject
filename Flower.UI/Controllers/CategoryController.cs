@@ -22,21 +22,23 @@ namespace Flower.UI.Controllers
         {
             try
             {
-                return View(await _crudService.GetAllPaginated<CategoryListItemDetailedGetResponse>("categories", page));
+                var paginatedResponse = await _crudService.GetAllPaginated<CategoryListItemDetailedGetResponse>("categories", page);
+                return View(paginatedResponse);
             }
             catch (HttpException e)
             {
                 if (e.Status == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    return RedirectToAction("login", "auth");
+                    return RedirectToAction("Login", "Auth");
                 }
-                else return RedirectToAction("error", "home");
+                return RedirectToAction("Error", "Home");
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                return RedirectToAction("error", "home");
+                return RedirectToAction("Error", "Home");
             }
         }
+
 
         public ActionResult Create()
         {
@@ -46,41 +48,52 @@ namespace Flower.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(CategoryCreateRequest createRequest)
         {
-            if (!ModelState.IsValid) return View();
+            if (!ModelState.IsValid)
+                return View(createRequest);
 
             try
             {
-                await _crudService.Create<CategoryCreateRequest>(createRequest, "groups");
-                return RedirectToAction("index");
-            }
-            catch (ModelException e)
-            {
-                foreach (var item in e.Error.Errors) ModelState.AddModelError(item.Key, item.Message);
-                return View();
-            }
-        }
-
-        public async Task<IActionResult> Edit(int id)
-        {
-            return View(await _crudService.Get<CategoryCreateRequest>("categories/" + id));
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Edit(CategoryCreateRequest editRequest, int id)
-        {
-            if (!ModelState.IsValid) return View();
-
-            try
-            {
-                await _crudService.Update<CategoryCreateRequest>(editRequest, "categories/" + id);
-                return RedirectToAction("index");
+                await _crudService.Create(createRequest, "categories");
+                return RedirectToAction("Index");
             }
             catch (ModelException e)
             {
                 foreach (var item in e.Error.Errors)
                     ModelState.AddModelError(item.Key, item.Message);
+                return View(createRequest);
+            }
+        }
 
-                return View();
+        public async Task<IActionResult> Edit(int id)
+        {
+            var category = await _crudService.Get<CategoryEditRequest>("categories/" + id);
+
+            if (category == null)
+            {
+                return NotFound();
+            }
+
+            return View(category);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(CategoryEditRequest editRequest, int id)
+        {
+            if (!ModelState.IsValid) return View(editRequest);
+
+            try
+            {
+                await _crudService.Update<CategoryEditRequest>(editRequest, "categories/" + id);
+                return RedirectToAction("index");
+            }
+            catch (ModelException e)
+            {
+                foreach (var item in e.Error.Errors)
+                {
+                    ModelState.AddModelError(item.Key, item.Message);
+                }
+
+                return View(editRequest);
             }
         }
 

@@ -27,7 +27,7 @@ namespace Flower.UI.Service
             var content = new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, "application/json");
             using (HttpResponseMessage response = await _client.PostAsync(baseUrl + path, content))
             {
-                var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -46,8 +46,8 @@ namespace Flower.UI.Service
             }
         }
 
-        public async Task<CreateResponse> CreateFromForm<TRequest>(TRequest request, string path)
-        {
+            public async Task<CreateResponse> CreateFromForm<TRequest>(TRequest request, string path)
+            {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
             _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, _httpContextAccessor.HttpContext.Request.Cookies["token"]);
 
@@ -113,21 +113,26 @@ namespace Flower.UI.Service
             }
         }
 
-        public async Task<PaginatedResponse<TResponse>> GetAllPaginated<TResponse>(string path, int page)
+        public async Task<PaginatedResponse<TResponse>> GetAllPaginated<TResponse>(string path, int page, int size = 10)
         {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
             _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, _httpContextAccessor.HttpContext.Request.Cookies["token"]);
 
-            using (var response = await _client.GetAsync(baseUrl + path + "?page=" + page))
+            using (var response = await _client.GetAsync($"{baseUrl}{path}?page={page}&size={size}"))
             {
                 if (response.IsSuccessStatusCode)
                 {
                     var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
                     return JsonSerializer.Deserialize<PaginatedResponse<TResponse>>(await response.Content.ReadAsStringAsync(), options);
                 }
-                else throw new HttpException(response.StatusCode);
+                else
+                {
+                    var errorResponse = JsonSerializer.Deserialize<ErrorResponse>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    throw new HttpException(response.StatusCode, errorResponse?.Message);
+                }
             }
         }
+
 
         public async Task Update<TRequest>(TRequest request, string path)
         {
@@ -139,15 +144,17 @@ namespace Flower.UI.Service
             {
                 var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                if (!response.IsSuccessStatusCode)
                 {
                     ErrorResponse errorResponse = JsonSerializer.Deserialize<ErrorResponse>(await response.Content.ReadAsStringAsync(), options);
-                    throw new ModelException(System.Net.HttpStatusCode.BadRequest, errorResponse);
-                }
-                else if (!response.IsSuccessStatusCode)
-                {
-                    ErrorResponse errorResponse = JsonSerializer.Deserialize<ErrorResponse>(await response.Content.ReadAsStringAsync(), options);
-                    throw new HttpException(response.StatusCode, errorResponse.Message);
+                    if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                    {
+                        throw new ModelException(System.Net.HttpStatusCode.BadRequest, errorResponse);
+                    }
+                    else
+                    {
+                        throw new HttpException(response.StatusCode, errorResponse.Message);
+                    }
                 }
             }
         }

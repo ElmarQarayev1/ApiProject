@@ -1,6 +1,38 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model CategoryEditRequest
 @{
+    ViewData["Title"] = "Edit";
 }
 
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Categories</h1>
+        <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            Edit
+        </a>
+    </div>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <form class="user" asp-action="edit" method="post">
+                <div class="form-group">
+                    <label for="noInput">Name</label>
+                    <input asp-for="Name" class="form-control" id="noInput" placeholder="Enter Name here..">
+                    <span class="text-danger" asp-validation-for="Name"></span>
+                </div>
+                <div class="form-group">
+                    <label for="roseIds">Rose IDs</label>
+                    <input asp-for="RoseIds" class="form-control" id="roseIds" placeholder="Enter Rose IDs separated by comma..">
+                    <span class="text-danger" asp-validation-for="RoseIds"></span>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    Edit Category
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+@section scripts {
+    @Html.Partial("_ValidationScriptsPartial");
+}

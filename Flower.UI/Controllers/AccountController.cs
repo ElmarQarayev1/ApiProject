@@ -33,7 +33,7 @@ namespace Flower.UI.Controllers
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 {
-                    ModelState.AddModelError("", "Email or Password incorrect!");
+                    ModelState.AddModelError("", "UserName or Password incorrect!");
                     return View();
                 }
                 else

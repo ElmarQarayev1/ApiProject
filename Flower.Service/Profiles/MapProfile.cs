@@ -43,9 +43,11 @@ namespace Flower.Service.Profiles
 
 
 
-            CreateMap<Category, CategoryGetDto>().ReverseMap();
-            CreateMap<Category, CategoryPaginatedGet>();
+            CreateMap<Category, CategoryGetDto>()
+                .ForMember(dest => dest.RoseCount, s => s.MapFrom(s => s.RoseCategories.Count));
 
+            CreateMap<Category, CategoryPaginatedGet>()
+                 .ForMember(dest => dest.RoseCount, s => s.MapFrom(s => s.RoseCategories.Count));
 
 
             CreateMap<Slider, SliderCreateDto>().ReverseMap();

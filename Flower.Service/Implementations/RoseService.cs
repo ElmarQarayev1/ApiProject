@@ -174,7 +174,6 @@ namespace Flower.Service.Implementations
             rose.RoseCategories = roseCategories;
             
 
-
             List<string> deletedFiles = new List<string>();
 
             if (updateDto.Files != null && updateDto.Files.Any())
