@@ -152,20 +152,19 @@ namespace Flower.Service.Implementations
             rose.RoseCategories = roseCategories;
 
 
-            List<Picture> data = rose.Pictures.Where(x => !updateDto.ExistPictureIds.Contains(x.Id)).ToList();
-            List<Picture> removedImages = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+            List<Picture> pictures = rose.Pictures.Where(x => !updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+            List<Picture> removedPictures = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
 
-            rose.Pictures = data;
+            rose.Pictures = pictures;
 
             foreach (var imgFile in updateDto.Files)
             {
-                Picture bookImg = new Picture
+                Picture Img = new Picture
                 {
                     ImageName = FileManager.Save(imgFile, _env.WebRootPath, "uploads/roses"),
                 };
-                rose.Pictures.Add(bookImg);
+                rose.Pictures.Add(Img);
             }
-
          
             rose.ModifiedAt = DateTime.Now;
 
@@ -174,7 +173,7 @@ namespace Flower.Service.Implementations
             _roseRepository.Save();
 
 
-            foreach (var item in removedImages)
+            foreach (var item in removedPictures)
             {
                 FileManager.Delete(_env.WebRootPath, "uploads/roses", item.ImageName);
             }
