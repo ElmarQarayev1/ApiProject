@@ -99,21 +99,6 @@ namespace Flower.Service.Implementations
 
             entity.Name = updateDto.Name;
 
-            if (updateDto.RoseIds != null)
-            {
-               
-                entity.RoseCategories.Clear();
-
-               
-                entity.RoseCategories = updateDto.RoseIds
-                    .Select(roseId => new RoseCategory { RoseId = roseId, CategoryId = id })
-                    .ToList();
-            }
-            else
-            {
-                entity.RoseCategories = null;
-            }
-
             _categoryRepository.Save();
         }
 

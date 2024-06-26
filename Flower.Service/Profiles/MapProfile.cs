@@ -37,10 +37,13 @@ namespace Flower.Service.Profiles
             CreateMap<Rose, RosePaginatedGet>().
                 ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
-            CreateMap<Rose, RoseDetailsDto>()
-                .ForMember(dest => dest.Pictures, opt => opt.MapFrom(src => src.Pictures.Select(rc => rc.ImageName).ToList()))
-                 .ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
+ 
 
+            CreateMap<Rose, RoseDetailsDto>()
+    .ForMember(dest => dest.Pictures,
+               opt => opt.MapFrom(src => src.Pictures.Select(rc => baseUrl + "/uploads/roses/" + rc.ImageName).ToList()))
+    .ForMember(dest => dest.CategoryIds,
+               opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
 
             CreateMap<Category, CategoryGetDto>()

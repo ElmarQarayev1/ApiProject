@@ -41,6 +41,7 @@ namespace Flower.UI.Controllers
                 throw;
             }
         }
+
         public async Task<IActionResult> Create()
         {
             _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Request.Cookies["token"]);
@@ -79,6 +80,48 @@ namespace Flower.UI.Controllers
             }
         }
 
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var slider = await _crudService.Get<SliderGetRequest>("sliders/" + id);
+
+            if (slider == null)
+            {
+                return NotFound();
+            }
+
+            SliderEditRequest sliderEdit = new SliderEditRequest
+            {
+                Title = slider.Title,
+                Desc = slider.Desc,
+                FileUrl = slider.File,
+                Order=slider.Order
+
+            };
+            
+            return View(sliderEdit);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(SliderEditRequest editRequest, int id)
+       {
+            if (!ModelState.IsValid) return View(editRequest);
+
+            try
+            {
+                await _crudService.Update<SliderEditRequest>(editRequest, "sliders/" + id);
+                return RedirectToAction("index");
+            }
+            catch (ModelException e)
+            {
+                foreach (var item in e.Error.Errors)
+                {
+                    ModelState.AddModelError(item.Key, item.Message);
+                }
+
+                return View(editRequest);
+            }
+        }
     }
 }
 

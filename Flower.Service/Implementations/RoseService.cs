@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using AutoMapper;
 using Flower.Core.Entities;
+using Flower.Data.Repositories.Implementations;
 using Flower.Data.Repositories.Interfaces;
 using Flower.Service.Dtos;
 using Flower.Service.Dtos.RoseDtos;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 
 namespace Flower.Service.Implementations
 {
@@ -34,59 +36,38 @@ namespace Flower.Service.Implementations
         {
             List<Category> categories = new List<Category>();
 
-                var categoryIds = createDto.CategoryIds?.ToList();
+            var categoryIds = createDto.CategoryIds?.ToList();
 
-                if (categoryIds != null)
-                {
+            if (categoryIds != null)
+            {
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
-                }
+            }
 
-           
             if (categoryIds == null || categories.Count == 0)
             {
                 throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
-
 
             if (_roseRepository.Exists(x => x.Name.ToUpper() == createDto.Name.ToUpper() && !x.IsDeleted))
             {
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
 
-          
             var roseCategories = createDto.CategoryIds.Select(x => new RoseCategory { CategoryId = x }).ToList();
-
 
             Rose rose = new Rose
             {
                 Name = createDto.Name,
                 Desc = createDto.Desc,
                 Value = createDto.Value,
-                RoseCategories = roseCategories
+                RoseCategories = roseCategories,
+                Pictures = new List<Picture>() 
             };
 
-           
-            if (createDto.Files != null && createDto.Files.Any())
+            foreach (var file in createDto.Files)
             {
-                var pictures = new List<Picture>();
-                foreach (var file in createDto.Files)
-                {
-                    if (file.Length > 0)
-                    {
-                        var filePath = Path.Combine(_env.WebRootPath, "uploads/roses", file.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            file.CopyTo(stream);
-                        }
-
-                        pictures.Add(new Picture
-                        {
-                            ImageName = file.FileName,
-                            Rose = rose 
-                        });
-                    }
-                }
-                rose.Pictures = pictures;
+                var filePath = FileManager.Save(file, _env.WebRootPath, "uploads/roses");
+                rose.Pictures.Add(new Picture { ImageName = filePath });
             }
 
             _roseRepository.Add(rose);
@@ -94,8 +75,7 @@ namespace Flower.Service.Implementations
 
             return rose.Id;
         }
-       
-      
+
 
         public void Delete(int id)
         {
@@ -110,13 +90,11 @@ namespace Flower.Service.Implementations
             _roseRepository.Save();
         }
 
-
         public List<RoseGetDto> GetAll(string? search = null)
         {
             var roses = _roseRepository.GetAll(x => !x.IsDeleted && (search == null || x.Name.Contains(search))).ToList();
             return _mapper.Map<List<RoseGetDto>>(roses);
         }
-
 
         public PaginatedList<RosePaginatedGet> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
@@ -172,53 +150,36 @@ namespace Flower.Service.Implementations
             rose.Desc = updateDto.Desc;
             rose.Value = updateDto.Value;
             rose.RoseCategories = roseCategories;
-            
 
-            List<string> deletedFiles = new List<string>();
 
-            if (updateDto.Files != null && updateDto.Files.Any())
+            List<Picture> data = rose.Pictures.Where(x => !updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+            List<Picture> removedImages = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+
+            rose.Pictures = data;
+
+            foreach (var imgFile in updateDto.Files)
             {
-               
-                foreach (var picture in rose.Pictures)
+                Picture bookImg = new Picture
                 {
-                    deletedFiles.Add(picture.ImageName);
-                }
-
-                rose.Pictures.Clear();
-
-                foreach (var formFile in updateDto.Files)
-                {
-                    if (formFile.Length > 0)
-                    {
-                        var filePath = Path.Combine("wwwroot/uploads/roses", formFile.FileName);
-
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            formFile.CopyTo(stream);
-                        }
-
-                        var picture = new Picture
-                        {
-                            ImageName = formFile.FileName,
-                            Rose = rose
-                        };
-
-                        rose.Pictures.Add(picture);
-                    }
-                }
+                    ImageName = FileManager.Save(imgFile, _env.WebRootPath, "uploads/roses"),
+                };
+                rose.Pictures.Add(bookImg);
             }
 
-
+         
             rose.ModifiedAt = DateTime.Now;
+
+         
+
             _roseRepository.Save();
 
-            foreach (var deletedFile in deletedFiles)
+
+            foreach (var item in removedImages)
             {
-                FileManager.Delete(_env.WebRootPath, "uploads/roses", deletedFile);
+                FileManager.Delete(_env.WebRootPath, "uploads/roses", item.ImageName);
             }
+
         }
 
-
     }
-}
-
+} 

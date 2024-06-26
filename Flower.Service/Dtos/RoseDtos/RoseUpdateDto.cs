@@ -13,9 +13,12 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public string Desc { get; set; }
 
+
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
         public List<int>? CategoryIds { get; set; }
+
+        public List<int> ExistPictureIds { get; set; } = new List<int>();
     }
 
     public class RoseUpdateDtoValidator : AbstractValidator<RoseUpdateDto>

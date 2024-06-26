@@ -28,7 +28,7 @@ namespace Flower.Service.Dtos.SliderDtos
                 .Must(file => file == null || file.Length <= 2 * 1024 * 1024)
                 .WithMessage("File must be less than or equal to 2MB.")
                 .Must(file => file == null || new[] { "image/png", "image/jpeg" }.Contains(file.ContentType))
-                .WithMessage("File type must be png, jpeg, or jpg.");
+                .WithMessage("File type must be png, jpeg, or jpg.");   
         }
     }
 

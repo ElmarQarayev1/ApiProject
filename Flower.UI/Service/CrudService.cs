@@ -57,11 +57,54 @@ namespace Flower.UI.Service
                 var val = prop.GetValue(request);
 
                 if (val is IFormFile file)
-                    content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
+                {
+                    var fileContent = new StreamContent(file.OpenReadStream());
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+                    content.Add(fileContent, prop.Name, file.FileName);
+                }
                 else if (val is not null)
                     content.Add(new StringContent(val.ToString()), prop.Name);
             }
             using (HttpResponseMessage response = await _client.PostAsync(baseUrl + path, content))
+            {
+                var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonSerializer.Deserialize<CreateResponse>(await response.Content.ReadAsStringAsync(), options);
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    ErrorResponse errorResponse = JsonSerializer.Deserialize<ErrorResponse>(await response.Content.ReadAsStringAsync(), options);
+                    throw new ModelException(System.Net.HttpStatusCode.BadRequest, errorResponse);
+                }
+                else
+                {
+                    ErrorResponse errorResponse = JsonSerializer.Deserialize<ErrorResponse>(await response.Content.ReadAsStringAsync(), options);
+                    throw new HttpException(response.StatusCode, errorResponse.Message);
+                }
+            }
+        }
+        public async Task<CreateResponse> EditFromForm<TRequest>(TRequest request, string path)
+        {
+            _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
+            _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, _httpContextAccessor.HttpContext.Request.Cookies["token"]);
+
+            MultipartFormDataContent content = new MultipartFormDataContent();
+            foreach (var prop in request.GetType().GetProperties())
+            {
+                var val = prop.GetValue(request);
+
+                if (val is IFormFile file)
+                {
+                    var fileContent = new StreamContent(file.OpenReadStream());
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+                    content.Add(fileContent, prop.Name, file.FileName);
+                }
+                else if (val is not null)
+                    content.Add(new StringContent(val.ToString()), prop.Name);
+            }
+            using (HttpResponseMessage response = await _client.PutAsync(baseUrl + path, content))
             {
                 var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
 

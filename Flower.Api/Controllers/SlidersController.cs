@@ -18,17 +18,20 @@ namespace Flower.Api.Controllers
             _sliderService = sliderService;
         }
 
+
         [HttpPost("")]
         public ActionResult Create([FromForm] SliderCreateDto createDto)
         {
             return StatusCode(201, new { Id = _sliderService.Create(createDto) });
         }
 
+
         [HttpGet("")]
         public ActionResult<PaginatedList<SliderGetDto>> GetAll(string? search = null, int page = 1, int size = 10)
         {
             return StatusCode(200, _sliderService.GetAllByPage(search, page, size));
         }
+
 
         [HttpGet("all")]
         public ActionResult<List<SliderGetDto>> GetAll()
@@ -43,13 +46,13 @@ namespace Flower.Api.Controllers
             return StatusCode(200, _sliderService.GetById(id));
         }
 
+
         [HttpPut("{id}")]
         public IActionResult Update(int id, [FromForm] SliderUpdateDto updateDto)
         {
             _sliderService.Update(id, updateDto);
             return NoContent();
         }
-
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)

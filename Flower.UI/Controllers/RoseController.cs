@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Flower.UI.Exception;
 using Flower.UI.Models;
 using Flower.UI.Service;
@@ -22,7 +23,10 @@ namespace Flower.UI.Controllers
         {
             try
             {
+       
+
                 return View(await _crudService.GetAllPaginated<RoseListItemGetResponse>("roses", page, size));
+                
             }
             catch (HttpException e)
             {
@@ -39,6 +43,8 @@ namespace Flower.UI.Controllers
             {
                 throw;
             }
+          
+
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -53,7 +59,22 @@ namespace Flower.UI.Controllers
                 return StatusCode((int)e.Status);
             }
         }
+        private async Task<List<CategoryListItemGetResponse>> getCategories()
+        {
+            using (var response = await _client.GetAsync("https://localhost:7061/api/categories/all"))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
+                    var data = JsonSerializer.Deserialize<List<CategoryListItemGetResponse>>(await response.Content.ReadAsStringAsync(), options);
+
+                    return data;
+                }
+            }
+            return null;
+        }
 
     }
+
 }
 

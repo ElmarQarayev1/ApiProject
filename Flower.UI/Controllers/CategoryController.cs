@@ -13,11 +13,13 @@ namespace Flower.UI.Controllers
         private HttpClient _client;
         private readonly ICrudService _crudService;
 
+
         public CategoryController(ICrudService crudService)
         {
             _client = new HttpClient();
             _crudService = crudService;
         }
+
         public async Task<IActionResult> Index(int page = 1)
         {
             try

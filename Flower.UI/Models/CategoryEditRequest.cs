@@ -9,7 +9,6 @@ namespace Flower.UI.Models
         [MinLength(2)]
         public string Name { get; set; }
 
-        public List<int> RoseIds { get; set; } = new List<int>();
     }
 }
 
