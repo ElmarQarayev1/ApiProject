@@ -7,18 +7,18 @@ namespace Flower.Service.Dtos.RoseDtos
 {
 	public class RoseUpdateDto
 	{
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         public double Value { get; set; }
 
-        public string Desc { get; set; }
+        public string? Desc { get; set; }
 
 
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
         public List<int>? CategoryIds { get; set; }
 
-        public List<int> ExistPictureIds { get; set; } = new List<int>();
+        public List<int>? ExistPictureIds { get; set; } = new List<int>();
     }
 
     public class RoseUpdateDtoValidator : AbstractValidator<RoseUpdateDto>

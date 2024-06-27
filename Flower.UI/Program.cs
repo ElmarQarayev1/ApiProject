@@ -11,6 +11,11 @@ builder.Services.AddScoped<AuthFilter>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICrudService, CrudService>();
 
+builder.Services.AddHttpClient<ICrudService, CrudService>(client =>
+{
+    client.Timeout = TimeSpan.FromMilliseconds(100); // Zaman aşımını burada ayarlayın
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

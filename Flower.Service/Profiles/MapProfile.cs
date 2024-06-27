@@ -46,8 +46,8 @@ namespace Flower.Service.Profiles
                opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
 
-            CreateMap<Category, CategoryGetDto>()
-                .ForMember(dest => dest.RoseCount, s => s.MapFrom(s => s.RoseCategories.Count));
+            CreateMap<Category, CategoryGetDto>();
+               
 
             CreateMap<Category, CategoryPaginatedGet>()
                  .ForMember(dest => dest.RoseCount, s => s.MapFrom(s => s.RoseCategories.Count));

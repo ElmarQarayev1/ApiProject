@@ -6,11 +6,11 @@ namespace Flower.Service.Dtos.SliderDtos
 {
     public class SliderUpdateDto
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
-        public string Desc { get; set; }
+        public string? Desc { get; set; }
 
-        public IFormFile File { get; set; }
+        public IFormFile? File { get; set; }
 
         public int Order { get; set; }
     }
@@ -20,17 +20,17 @@ namespace Flower.Service.Dtos.SliderDtos
         {
             RuleFor(x => x.Title)
                .MaximumLength(35).WithMessage("Title cannot be longer than 35 characters.")
-               .MinimumLength(2).WithMessage("Title must be at least 2 characters long.")
-               .When(x => !string.IsNullOrEmpty(x.Title)); 
+               .MinimumLength(2).WithMessage("Title must be at least 2 characters long.");
+
 
             RuleFor(x => x.Desc)
                 .MaximumLength(200).WithMessage("Description cannot be longer than 200 characters.")
-                .MinimumLength(3).WithMessage("Description must be at least 3 characters long.")
-                .When(x => !string.IsNullOrEmpty(x.Desc)); 
+                .MinimumLength(3).WithMessage("Description must be at least 3 characters long.");
+
 
             RuleFor(x => x.Order)
-                .GreaterThan(0).WithMessage("'Order' must be greater than 0.")
-                .When(x => x.Order != 0);
+                .GreaterThan(0).WithMessage("'Order' must be greater than 0.");
+               
 
             RuleFor(x => x.File)
                 .Must(file => file == null || file.Length <= 2 * 1024 * 1024)

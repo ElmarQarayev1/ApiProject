@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Flower.UI.Exception;
 using Flower.UI.Models;
 using Flower.UI.Service;
@@ -104,16 +105,24 @@ namespace Flower.UI.Controllers
 
         [HttpPost]
         public async Task<IActionResult> Edit(SliderEditRequest editRequest, int id)
-       {
-            if (!ModelState.IsValid) return View(editRequest);
-
+        {
+            
+            if (!ModelState.IsValid)
+            {
+               
+                return View(editRequest);
+            }
             try
             {
-                await _crudService.Update<SliderEditRequest>(editRequest, "sliders/" + id);
-                return RedirectToAction("index");
+                                     
+                await _crudService.EditFromForm(editRequest, $"sliders/{id}");              
+   
+                return RedirectToAction("Index");
             }
+
             catch (ModelException e)
             {
+               
                 foreach (var item in e.Error.Errors)
                 {
                     ModelState.AddModelError(item.Key, item.Message);
@@ -122,6 +131,7 @@ namespace Flower.UI.Controllers
                 return View(editRequest);
             }
         }
+
     }
 }
 

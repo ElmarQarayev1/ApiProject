@@ -33,7 +33,6 @@
                     <div class="preview-box">
                         <img width="200" class="previewImg" src="@Model.FileUrl" />
                     </div>
-                    <span class="text-danger" asp-validation-for="@Model.File"></span>
                 </div>
                 <button class="btn btn-primary" type="submit">
                     Edit Slider
@@ -44,7 +43,6 @@
 </div>
 
 @section scripts {
-
     @Html.Partial("_ValidationScriptsPartial")
 
     <script>$(document).ready(function () {
@@ -52,18 +50,17 @@
                 let box = $(this).parent().find(".preview-box");
                 $(box).find(".previewImg").remove();
 
-                if (e.target.files.length > 0) { 
+                if (e.target.files.length > 0) {
                     let reader = new FileReader();
-                    reader.readAsDataURL(e.target.files[0]); 
+                    reader.readAsDataURL(e.target.files[0]);
                     reader.onload = () => {
                         let img = document.createElement("img");
                         img.style.width = "200px";
                         img.classList.add("previewImg");
-                        img.setAttribute("src", reader.result); 
+                        img.setAttribute("src", reader.result);
                         $(box).append(img);
                     }
                 } else {
-                   
                     $(box).find(".previewImg").remove();
                 }
             })

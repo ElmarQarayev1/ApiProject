@@ -4,6 +4,7 @@ using Flower.UI.Exception;
 using Flower.UI.Models;
 using Flower.UI.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace Flower.UI.Controllers
 {
@@ -59,9 +60,90 @@ namespace Flower.UI.Controllers
                 return StatusCode((int)e.Status);
             }
         }
+
+
+        public async Task<IActionResult> Create()
+        {
+          
+
+            ViewBag.Categories = await getCategories();
+
+            if (ViewBag.Categories == null) return RedirectToAction("error", "home");
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(RoseCreateRequest createRequest)
+        {
+            try
+            {
+                await _crudService.CreateFromForm(createRequest, "roses");
+                return RedirectToAction("index");
+            }
+            catch (ModelException ex)
+            {
+                foreach (var item in ex.Error.Errors)
+                    ModelState.AddModelError(item.Key, item.Message);
+
+                ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+
+                return View();
+            }
+        }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var rose = await _crudService.Get<RoseGetRequest>("roses/" + id);
+
+            if (rose == null)
+            {
+                return NotFound();
+            }
+
+            RoseEditRequest roseEdit = new RoseEditRequest
+            {
+                Name = rose.Name,
+                Desc = rose.Desc,
+                FileUrls = rose.Files,
+                Value = rose.Value,
+                CategoryIds = rose.CategoryIds
+            };
+
+            ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+
+            return View(roseEdit);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, RoseEditRequest editRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+                return View(editRequest);
+            }
+
+            try
+            {
+                await _crudService.EditFromForm(editRequest, $"roses/{id}");
+                return RedirectToAction("Index");
+            }
+            catch (ModelException ex)
+            {
+                foreach (var item in ex.Error.Errors)
+                    ModelState.AddModelError(item.Key, item.Message);
+
+                ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+                return View(editRequest);
+            }
+        }
+
+
         private async Task<List<CategoryListItemGetResponse>> getCategories()
         {
-            using (var response = await _client.GetAsync("https://localhost:7061/api/categories/all"))
+            using (var response = await _client.GetAsync("https://localhost:7120/api/Categories/all"))
             {
                 if (response.IsSuccessStatusCode)
                 {

@@ -46,12 +46,11 @@ namespace Flower.Api.Controllers
             return StatusCode(200, _sliderService.GetById(id));
         }
 
-
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromForm] SliderUpdateDto updateDto)
+        public void Update(int id, [FromForm] SliderUpdateDto updateDto)
         {
             _sliderService.Update(id, updateDto);
-            return NoContent();
+           
         }
 
         [HttpDelete("{id}")]

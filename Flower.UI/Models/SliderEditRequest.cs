@@ -6,7 +6,6 @@ namespace Flower.UI.Models
 {
 	public class SliderEditRequest
 	{
-
         [Required]
         public string Title { get; set; }
 
@@ -17,8 +16,8 @@ namespace Flower.UI.Models
         public int Order { get; set; }
 
         [JsonIgnore]
-        public string  FileUrl { get; set; }
-       
+        public string? FileUrl { get; set; }
+
         public IFormFile? File { get; set; }
     }
 }

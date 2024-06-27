@@ -168,7 +168,6 @@ namespace Flower.Service.Implementations
          
             rose.ModifiedAt = DateTime.Now;
 
-         
 
             _roseRepository.Save();
 

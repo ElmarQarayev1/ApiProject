@@ -11,6 +11,7 @@ namespace Flower.UI.Service
         Task Update<TRequest>(TRequest request, string path);
         Task Delete(string path);
         Task<CreateResponse> CreateFromForm<TRequest>(TRequest request, string path);
+        Task<CreateResponse> EditFromForm<TRequest>(TRequest request, string path);
     }
 }
 

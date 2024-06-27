@@ -42,6 +42,7 @@ namespace Flower.Service.Implementations
                 throw new ValidationException(validationResult.Errors);
             }
 
+
             Slider slider = new Slider
             {
                 Title = createDto.Title,
@@ -54,6 +55,7 @@ namespace Flower.Service.Implementations
 
             return slider.Id;
         }
+
 
         public void Delete(int id)
         {
@@ -68,12 +70,14 @@ namespace Flower.Service.Implementations
             _sliderRepository.Save();
         }
 
+
         public List<SliderGetDto> GetAll(string? search = null)
         {
             var sliders = _sliderRepository.GetAll(x => search == null || x.Title.Contains(search)).ToList();
             return _mapper.Map<List<SliderGetDto>>(sliders);
 
         }
+
 
         public PaginatedList<SliderPaginatedGet> GetAllByPage(string? search = null, int page = 1, int size = 10)
         {
@@ -87,6 +91,7 @@ namespace Flower.Service.Implementations
             return new PaginatedList<SliderPaginatedGet>(sliderDtos, paginated.TotalPages, page, size);
         }
 
+
         public SliderGetDto GetById(int id)
         {
             Slider slider = _sliderRepository.Get(x => x.Id == id);
@@ -97,6 +102,7 @@ namespace Flower.Service.Implementations
             return _mapper.Map<SliderGetDto>(slider);
 
         }
+
 
         public void Update(int id, SliderUpdateDto updateDto)
         {
@@ -114,9 +120,9 @@ namespace Flower.Service.Implementations
                 throw new ValidationException(validationResult.Errors);
             }
 
-           
-            string deletedFile = slider.ImageName;
 
+          
+            string deletedFile = slider.ImageName;
             
             if (!string.IsNullOrEmpty(updateDto.Title))
             {

@@ -13,7 +13,7 @@ namespace Flower.UI.Models
 
         public int Order { get; set; }
 
-        public string File { get; set; }
+        public string? File { get; set; }
     }
 }
 

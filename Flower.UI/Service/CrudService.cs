@@ -62,8 +62,28 @@ namespace Flower.UI.Service
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
                     content.Add(fileContent, prop.Name, file.FileName);
                 }
+                else if(val is List<IFormFile> listF)
+                {
+                    foreach (var  item in listF)
+                    {
+
+                        var fileContent = new StreamContent(item.OpenReadStream());
+                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(item.ContentType);
+                        content.Add(fileContent, prop.Name, item.FileName);
+
+                    }
+                }
+                else if (val is List<int> list)
+                {
+                    foreach (var item in list)
+                    {
+                        content.Add(new StringContent(item.ToString()), prop.Name);
+                    }
+                }
                 else if (val is not null)
+                {
                     content.Add(new StringContent(val.ToString()), prop.Name);
+                }
             }
             using (HttpResponseMessage response = await _client.PostAsync(baseUrl + path, content))
             {
@@ -85,6 +105,7 @@ namespace Flower.UI.Service
                 }
             }
         }
+
         public async Task<CreateResponse> EditFromForm<TRequest>(TRequest request, string path)
         {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
@@ -101,8 +122,28 @@ namespace Flower.UI.Service
                     fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
                     content.Add(fileContent, prop.Name, file.FileName);
                 }
+                else if (val is List<IFormFile> listF)
+                {
+                    foreach (var item in listF)
+                    {
+
+                        var fileContent = new StreamContent(item.OpenReadStream());
+                        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(item.ContentType);
+                        content.Add(fileContent, prop.Name, item.FileName);
+
+                    }
+                }
+                else if (val is List<int> list)
+                {
+                    foreach (var item in list)
+                    {
+                        content.Add(new StringContent(item.ToString()), $"{prop.Name}[]");
+                    }
+                }
                 else if (val is not null)
+                {
                     content.Add(new StringContent(val.ToString()), prop.Name);
+                }
             }
             using (HttpResponseMessage response = await _client.PutAsync(baseUrl + path, content))
             {
@@ -124,7 +165,6 @@ namespace Flower.UI.Service
                 }
             }
         }
-
         public async Task Delete(string path)
         {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
