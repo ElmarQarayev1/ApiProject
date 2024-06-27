@@ -92,9 +92,31 @@ namespace Flower.UI.Controllers
             }
         }
 
+        //public async Task<IActionResult> Edit(int id)
+        //{
+        //    var rose = await _crudService.Get<RoseGetRequest>("roses/" + id);
+
+        //    if (rose == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    RoseEditRequest roseEdit = new RoseEditRequest
+        //    {
+        //        Name = rose.Name,
+        //        Desc = rose.Desc,
+        //        Value = rose.Value,
+        //        CategoryIds = rose.CategoryIds
+        //    };
+
+        //    ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+
+        //    ViewBag.Pictures = roseEdit.FileUrls;
+        //    return View(roseEdit);
+        //}
         public async Task<IActionResult> Edit(int id)
         {
-            var rose = await _crudService.Get<RoseGetRequest>("roses/" + id);
+            var rose = await _crudService.Get<RoseGetResponse>("roses/" + id);
 
             if (rose == null)
             {
@@ -105,12 +127,15 @@ namespace Flower.UI.Controllers
             {
                 Name = rose.Name,
                 Desc = rose.Desc,
-                FileUrls = rose.Files,
                 Value = rose.Value,
-                CategoryIds = rose.CategoryIds
+                CategoryIds = rose.CategoryIds,
+               //PictureIds = rose.PictureIds,
+                FileUrls = rose.Pictures
             };
 
             ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
+            ViewBag.Pictures = rose.Pictures;
+            //ViewBag.PictureIds = rose.PictureIds;
 
             return View(roseEdit);
         }

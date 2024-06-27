@@ -32,7 +32,6 @@ namespace Flower.Api.Controllers
             return StatusCode(200, _sliderService.GetAllByPage(search, page, size));
         }
 
-
         [HttpGet("all")]
         public ActionResult<List<SliderGetDto>> GetAll()
         {

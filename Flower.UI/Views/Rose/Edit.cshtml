@@ -11,37 +11,53 @@
             <form class="user" asp-action="Edit" method="post" enctype="multipart/form-data">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="title1Input">Name</label>
-                        <input asp-for="Name" class="form-control" id="title1Input" placeholder=" ">
+                        <label for="Name">Name</label>
+                        <input asp-for="Name" class="form-control" id="Name" placeholder=" ">
                         <span class="text-danger" asp-validation-for="Name"></span>
                     </div>
                     <div class="form-group col-md-6">
-                        <label for="date">Desc</label>
-                        <input asp-for="Desc" class="form-control" id="date" placeholder=" ">
+                        <label for="Desc">Desc</label>
+                        <input asp-for="Desc" class="form-control" id="Desc" placeholder=" ">
                         <span class="text-danger" asp-validation-for="Desc"></span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="venue">Value</label>
-                    <input asp-for="Value" class="form-control" id="venue" placeholder=" " />
+                    <label for="Value">Value</label>
+                    <input asp-for="Value" class="form-control" id="Value" placeholder=" " />
                     <span class="text-danger" asp-validation-for="Value"></span>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <label for="CategoryId">CategoryIds</label>
-                        <select asp-for="CategoryIds" class="form-control" id="CategoryId" multiple="multiple" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"></select>
+                        <label for="CategoryIds">CategoryIds</label>
+                        <select asp-for="CategoryIds" class="form-control" id="CategoryIds" multiple="multiple" asp-items="@(new SelectList(ViewBag.Categories, "Id", "Name"))"></select>
                         <span class="text-danger" asp-validation-for="CategoryIds"></span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="imgInput">ImageFile</label>
-                    <input asp-for="Files" class="form-control imgInput" placeholder=" " multiple>
-                    <div class="preview-box mt-2">
-                        <img width="200" class="previewImg" />
-                    </div>
-                    <span class="text-danger" asp-validation-for="Files"></span>
-                </div>
-                <button class="btn btn-primary" type="submit">Update Rose</button>
+                <label for="imgInput">Image File</label>
+                <input type="file" name="Files" class="form-control imgInput" placeholder=" " multiple />
+
+                @if (ViewBag.Pictures != null)
+                {
+                    @foreach (PictureResponse item in ViewBag.Pictures)
+                    {
+                        @*<div class="form-group">
+
+                            <input type="hidden" asp-for="PictureIds" value="@item.Id" />
+                            <div class="preview-box mt-2" style="display:inline-block;">
+                                <img width="200" class="previewImg" src="@item.Url" />
+                            </div>
+
+                            <span class="text-danger" asp-validation-for="@item.Url"></span>
+                        </div>*@
+                        <div class="img-box mt-3 mr-3" style="display:inline-block;position:relative">
+                            <span class="remove-img-icon">x</span>
+                            <input type="hidden" asp-for="PictureIds" value="@item.Id" />
+                            <img width="200"  class="previewImg" src="@item.Url" />
+                        </div>
+                    }
+                }
+
+                <button class="btn btn-primary" type="submit">Edit Rose</button>
             </form>
         </div>
     </div>
@@ -68,6 +84,6 @@
                 } else {
                     $(box).find(".previewImg").remove();
                 }
-            })
+            });
         });</script>
 }

@@ -75,6 +75,8 @@ namespace Flower.UI.Service
                 }
                 else if (val is List<int> list)
                 {
+                   // content.Add(new StringContent(JsonSerializer.Serialize(list)), prop.Name);
+
                     foreach (var item in list)
                     {
                         content.Add(new StringContent(item.ToString()), prop.Name);

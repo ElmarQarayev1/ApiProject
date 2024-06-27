@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Flower.UI.Models
 {
-	public class RoseGetRequest
+	public class RoseGetResponse
 	{
         public string Name { get; set; }
 
@@ -14,8 +14,13 @@ namespace Flower.UI.Models
 
         public string  Desc { get; set; }
 
-        [JsonPropertyName("pictures")]
-        public List<string>? Files { get; set; }
+       // [JsonIgnore]
+        public List<PictureResponse>? Pictures { get; set; }
+
+
+        //[JsonPropertyName("pictures")]
+
+        //public List<PictureResponse>? Files { get; set; }
     }
 }
 

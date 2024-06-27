@@ -30,20 +30,29 @@ namespace Flower.Service.Profiles
                 .ForMember(dest => dest.Files, opt => opt.Ignore());
 
             CreateMap<RoseCreateDto, Rose>();
+
+
+
+
             CreateMap<Rose, RoseDetailsDto>();
+
+            CreateMap<Rose, RoseDetailsDto>()
+     .ForMember(dest => dest.Pictures,
+                opt => opt.MapFrom(src => src.Pictures.Select(rc => new PictureResponseDto
+                {
+                    Id = rc.Id,
+                    Url = baseUrl + "/uploads/roses/" + rc.ImageName
+                }).ToList()))
+     .ForMember(dest => dest.CategoryIds,
+                opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
+
+
 
             CreateMap<Rose, RoseGetDto>().ReverseMap();
 
             CreateMap<Rose, RosePaginatedGet>().
                 ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
- 
-
-            CreateMap<Rose, RoseDetailsDto>()
-    .ForMember(dest => dest.Pictures,
-               opt => opt.MapFrom(src => src.Pictures.Select(rc => baseUrl + "/uploads/roses/" + rc.ImageName).ToList()))
-    .ForMember(dest => dest.CategoryIds,
-               opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
 
             CreateMap<Category, CategoryGetDto>();

@@ -24,8 +24,8 @@ namespace Flower.Api.Controllers
         {
 
             return StatusCode(201, new { id = _roseService.Create(createDto) });
-
         }
+
         [HttpGet("all")]
         public ActionResult<List<RoseGetDto>> GetAll()
         {

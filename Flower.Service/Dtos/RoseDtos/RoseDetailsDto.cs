@@ -12,7 +12,7 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public string Desc { get; set; }
 
-        public List<string>? Pictures { get; set; }
+      public List<PictureResponseDto> Pictures { get; set; }
 
         public List<int> CategoryIds { get; set; }
 
