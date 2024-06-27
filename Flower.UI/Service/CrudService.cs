@@ -85,6 +85,7 @@ namespace Flower.UI.Service
                     content.Add(new StringContent(val.ToString()), prop.Name);
                 }
             }
+
             using (HttpResponseMessage response = await _client.PostAsync(baseUrl + path, content))
             {
                 var options = new JsonSerializerOptions() { PropertyNameCaseInsensitive = true };
@@ -106,7 +107,7 @@ namespace Flower.UI.Service
             }
         }
 
-        public async Task<CreateResponse> EditFromForm<TRequest>(TRequest request, string path)
+        public async Task EditFromForm<TRequest>(TRequest request, string path)
         {
             _client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
             _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, _httpContextAccessor.HttpContext.Request.Cookies["token"]);
@@ -151,7 +152,7 @@ namespace Flower.UI.Service
 
                 if (response.IsSuccessStatusCode)
                 {
-                    return JsonSerializer.Deserialize<CreateResponse>(await response.Content.ReadAsStringAsync(), options);
+                   // return JsonSerializer.Deserialize<CreateResponse>(await response.Content.ReadAsStringAsync(), options);
                 }
                 else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
                 {
