@@ -27,7 +27,6 @@ namespace Flower.UI.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var loginResponse = JsonSerializer.Deserialize<LoginResponse>(await response.Content.ReadAsStringAsync(), options);
-
                     Response.Cookies.Append("token", "Bearer " + loginResponse.Token);
                     return RedirectToAction("index", "home");
                 }

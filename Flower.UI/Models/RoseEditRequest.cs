@@ -18,12 +18,14 @@ namespace Flower.UI.Models
         [Required]
         public double Value { get; set; }
 
-        public List<int> PictureIds { get; set; }
+        public List<int> ExistPictureIds { get; set; } = new List<int>();
 
         [JsonIgnore]
         public List<PictureResponse>? FileUrls { get; set; }
 
         public List<IFormFile>? Files { get; set; }
+
+        public List<int> RemovedPictureIds { get; set; } = new List<int>();
     }
 }
 

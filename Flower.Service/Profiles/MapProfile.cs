@@ -31,9 +31,6 @@ namespace Flower.Service.Profiles
 
             CreateMap<RoseCreateDto, Rose>();
 
-
-
-
             CreateMap<Rose, RoseDetailsDto>();
 
             CreateMap<Rose, RoseDetailsDto>()
@@ -47,7 +44,6 @@ namespace Flower.Service.Profiles
                 opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
 
 
-
             CreateMap<Rose, RoseGetDto>().ReverseMap();
 
             CreateMap<Rose, RosePaginatedGet>().
@@ -55,22 +51,29 @@ namespace Flower.Service.Profiles
 
 
 
-            CreateMap<Category, CategoryGetDto>();
-               
 
+
+
+            CreateMap<Category, CategoryGetDto>();
+              
             CreateMap<Category, CategoryPaginatedGet>()
                  .ForMember(dest => dest.RoseCount, s => s.MapFrom(s => s.RoseCategories.Count));
 
 
+
+
+
+
+
+
             CreateMap<Slider, SliderCreateDto>().ReverseMap();
             CreateMap<Slider, SliderPaginatedGet>()
-                 .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
+                 .ForMember(dest => dest.FileUrl, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
 
             CreateMap<Slider, SliderGetDto>()
                 .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
 
-
-            
+           
         }
     }
 

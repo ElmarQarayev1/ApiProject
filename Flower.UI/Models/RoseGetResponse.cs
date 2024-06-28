@@ -14,13 +14,10 @@ namespace Flower.UI.Models
 
         public string  Desc { get; set; }
 
-       // [JsonIgnore]
         public List<PictureResponse>? Pictures { get; set; }
 
 
-        //[JsonPropertyName("pictures")]
-
-        //public List<PictureResponse>? Files { get; set; }
+      
     }
 }
 

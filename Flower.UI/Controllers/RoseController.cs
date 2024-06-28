@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.Json;
 using Flower.UI.Exception;
+using Flower.UI.Filter;
 using Flower.UI.Models;
 using Flower.UI.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,8 @@ using Microsoft.Net.Http.Headers;
 
 namespace Flower.UI.Controllers
 {
-	public class RoseController:Controller
+    [ServiceFilter(typeof(AuthFilter))]
+    public class RoseController:Controller
 	{
 
         private HttpClient _client;
@@ -92,28 +94,7 @@ namespace Flower.UI.Controllers
             }
         }
 
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    var rose = await _crudService.Get<RoseGetRequest>("roses/" + id);
-
-        //    if (rose == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    RoseEditRequest roseEdit = new RoseEditRequest
-        //    {
-        //        Name = rose.Name,
-        //        Desc = rose.Desc,
-        //        Value = rose.Value,
-        //        CategoryIds = rose.CategoryIds
-        //    };
-
-        //    ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
-
-        //    ViewBag.Pictures = roseEdit.FileUrls;
-        //    return View(roseEdit);
-        //}
+       
         public async Task<IActionResult> Edit(int id)
         {
             var rose = await _crudService.Get<RoseGetResponse>("roses/" + id);
@@ -129,13 +110,13 @@ namespace Flower.UI.Controllers
                 Desc = rose.Desc,
                 Value = rose.Value,
                 CategoryIds = rose.CategoryIds,
-               //PictureIds = rose.PictureIds,
+              
                 FileUrls = rose.Pictures
             };
 
             ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
             ViewBag.Pictures = rose.Pictures;
-            //ViewBag.PictureIds = rose.PictureIds;
+           
 
             return View(roseEdit);
         }
@@ -149,10 +130,20 @@ namespace Flower.UI.Controllers
                 ViewBag.Categories = await _crudService.Get<List<CategoryListItemGetResponse>>("categories/all");
                 return View(editRequest);
             }
-
             try
             {
-                await _crudService.EditFromForm(editRequest, $"roses/{id}");
+                var updateDto = new RoseEditRequest
+                {
+                    Name = editRequest.Name,
+                    Value = editRequest.Value,
+                    Desc = editRequest.Desc,
+                    CategoryIds = editRequest.CategoryIds,
+                    Files = editRequest.Files ?? new List<IFormFile>(),
+                    ExistPictureIds = editRequest.ExistPictureIds,
+                    RemovedPictureIds = editRequest.RemovedPictureIds
+                };
+
+                await _crudService.EditFromForm(updateDto, $"roses/{id}");
                 return RedirectToAction("Index");
             }
             catch (ModelException ex)

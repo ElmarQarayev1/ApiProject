@@ -9,6 +9,7 @@ namespace Flower.UI.Models
 
 		public string Desc { get; set; }
 
+		public string FileUrl { get; set; }
 
 		public int Order { get; set; }
 	}

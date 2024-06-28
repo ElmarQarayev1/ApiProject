@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Flower.UI.Exception;
+using Flower.UI.Filter;
 using Flower.UI.Models;
 using Flower.UI.Service;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,8 @@ using Microsoft.Net.Http.Headers;
 
 namespace Flower.UI.Controllers
 {
-	public class SliderController:Controller
+    [ServiceFilter(typeof(AuthFilter))]
+    public class SliderController:Controller
 	{
 
         private HttpClient _client;
@@ -84,7 +86,7 @@ namespace Flower.UI.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var slider = await _crudService.Get<SliderGetRequest>("sliders/" + id);
+            var slider = await _crudService.Get<SliderGetResponse>("sliders/" + id);
 
             if (slider == null)
             {

@@ -9,7 +9,7 @@ namespace Flower.Service.Dtos.SliderDtos
 
         public string Desc { get; set; }
 
-        public string File { get; set; }
+        public string FileUrl { get; set; }
 
         public int Order { get; set; }
     }

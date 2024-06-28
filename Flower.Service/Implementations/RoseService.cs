@@ -114,6 +114,7 @@ namespace Flower.Service.Implementations
             return _mapper.Map<RoseDetailsDto>(rose);
         }
 
+      
         public void Update(int id, RoseUpdateDto updateDto)
         {
             List<Category> categories = new List<Category>();
@@ -125,12 +126,10 @@ namespace Flower.Service.Implementations
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
             }
 
-
             if (categoryIds == null || categories.Count == 0)
             {
                 throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
-
 
             Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories", "Pictures");
 
@@ -144,6 +143,7 @@ namespace Flower.Service.Implementations
             {
                 throw new RestException(StatusCodes.Status400BadRequest, "Name", "Rose already exists by given Name");
             }
+
             var roseCategories = updateDto.CategoryIds.Select(x => new RoseCategory { CategoryId = x }).ToList();
 
             rose.Name = updateDto.Name;
@@ -151,9 +151,8 @@ namespace Flower.Service.Implementations
             rose.Value = updateDto.Value;
             rose.RoseCategories = roseCategories;
 
-
-            List<Picture> pictures = rose.Pictures.Where(x => !updateDto.ExistPictureIds.Contains(x.Id)).ToList();
-            List<Picture> removedPictures = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+            List<Picture> pictures = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
+            List<Picture> removedPictures = rose.Pictures.Where(x => updateDto.RemovedPictureIds.Contains(x.Id)).ToList();
 
             rose.Pictures = pictures;
 
@@ -165,19 +164,17 @@ namespace Flower.Service.Implementations
                 };
                 rose.Pictures.Add(Img);
             }
-         
+
             rose.ModifiedAt = DateTime.Now;
 
-
             _roseRepository.Save();
-
 
             foreach (var item in removedPictures)
             {
                 FileManager.Delete(_env.WebRootPath, "uploads/roses", item.ImageName);
             }
-
         }
+
 
     }
 } 

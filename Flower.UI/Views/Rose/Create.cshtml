@@ -2,6 +2,28 @@
 @{
     ViewData["Title"] = "Create";
 }
+<style>
+    .img-box {
+        margin-right: 10px;
+        margin-bottom: 10px;
+        display: inline-block;
+        position: relative;
+    }
+
+    .remove-img-icon {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        cursor: pointer;
+        color: red;
+        font-weight: bold;
+        font-size: 18px;
+        background-color: white;
+        border: 1px solid red;
+        padding: 5px;
+        border-radius: 50%;
+    }
+</style>
 <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Roses</h1>
@@ -36,9 +58,7 @@
                 <div class="form-group">
                     <label for="imgInput">ImageFile</label>
                     <input asp-for="Files" class="form-control imgInput" placeholder=" " multiple>
-                    <div class="preview-box mt-2">
-                        <img width="200" class="previewImg" />
-                    </div>
+                    <div class="preview-box mt-2"></div>
                     <span class="text-danger" asp-validation-for="Files"></span>
                 </div>
                 <button class="btn btn-primary" type="submit">Create Rose</button>
@@ -53,21 +73,56 @@
     <script>$(document).ready(function () {
             $(".imgInput").change(function (e) {
                 let box = $(this).parent().find(".preview-box");
-                $(box).find(".previewImg").remove();
+                $(box).empty(); 
 
-                if (e.target.files.length > 0) {
+                Array.from(e.target.files).forEach((file, index) => {
                     let reader = new FileReader();
-                    reader.readAsDataURL(e.target.files[0]);
+                    reader.readAsDataURL(file);
                     reader.onload = () => {
+                        let imgBox = document.createElement("div");
+                        imgBox.classList.add("img-box", "mt-3", "mr-3");
+                        imgBox.style.display = "inline-block";
+                        imgBox.style.position = "relative";
+
+                        let removeIcon = document.createElement("span");
+                        removeIcon.classList.add("remove-img-icon");
+                        removeIcon.setAttribute("data-index", index);
+                        removeIcon.textContent = "x";
+                        removeIcon.style.position = "absolute";
+                        removeIcon.style.top = "5px";
+                        removeIcon.style.right = "5px";
+                        removeIcon.style.background = "red";
+                        removeIcon.style.color = "white";
+                        removeIcon.style.cursor = "pointer";
+
                         let img = document.createElement("img");
                         img.style.width = "200px";
                         img.classList.add("previewImg");
                         img.setAttribute("src", reader.result);
-                        $(box).append(img);
+
+                        imgBox.appendChild(removeIcon);
+                        imgBox.appendChild(img);
+                        box.append(imgBox);
+
+                       
+                        removeIcon.addEventListener("click", function () {
+                            let imgBox = this.closest(".img-box");
+                            imgBox.remove();
+
+                          
+                            let dt = new DataTransfer();
+                            let input = document.querySelector('.imgInput');
+                            let { files } = input;
+
+                            for (let i = 0; i < files.length; i++) {
+                                if (i !== index) {
+                                    dt.items.add(files[i]);
+                                }
+                            }
+                            input.files = dt.files;
+                        });
                     }
-                } else {
-                    $(box).find(".previewImg").remove();
-                }
-            })
+                });
+            });
         });</script>
 }

@@ -19,6 +19,10 @@ namespace Flower.Service.Dtos.RoseDtos
         public List<int>? CategoryIds { get; set; }
 
         public List<int>? ExistPictureIds { get; set; } = new List<int>();
+
+        public List<int>? RemovedPictureIds { get; set; } = new List<int>();
+
+
     }
 
     public class RoseUpdateDtoValidator : AbstractValidator<RoseUpdateDto>

@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Flower.UI.Models
 {
-	public class SliderGetRequest
+	public class SliderGetResponse
 	{
         public string Title { get; set; }
 
