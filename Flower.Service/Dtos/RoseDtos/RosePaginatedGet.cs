@@ -13,6 +13,9 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public string Desc { get; set; }
 
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
 
         public List<int> CategoryIds { get; set; }
     }

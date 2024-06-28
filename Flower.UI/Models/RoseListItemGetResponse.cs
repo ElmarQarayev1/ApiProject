@@ -10,6 +10,10 @@ namespace Flower.UI.Models
 		public double Value { get; set; }
 
 		public string Desc { get; set; }
-	}
+
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
+    }
 }
 

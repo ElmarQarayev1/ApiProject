@@ -9,6 +9,10 @@ namespace Flower.Core.Entities
 
 		public string Desc { get; set; }
 
+		public double DiscountPercent { get; set; }
+
+		public DateTime DiscountExpireDate { get; set; }
+
 	    public List<Picture>? Pictures { get; set; }
 
         public List<RoseCategory>? RoseCategories { get; set; }

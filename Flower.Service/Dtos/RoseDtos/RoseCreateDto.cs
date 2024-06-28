@@ -14,6 +14,10 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public string Desc { get; set; }
 
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
+
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
         public List<int> CategoryIds { get; set; } = new List<int>();
@@ -27,7 +31,12 @@ namespace Flower.Service.Dtos.RoseDtos
             RuleFor(x => x.Value).NotNull();
             RuleFor(x => x.Desc).NotEmpty().MaximumLength(200);
 
-           
+            RuleFor(x => x.DiscountPercent).NotEmpty().GreaterThan(0);
+
+            RuleFor(x => x.DiscountExpireDate)
+                .GreaterThanOrEqualTo(DateTime.Now)
+                .WithMessage("DiscountExpireDate cannot be earlier than today's date.");
+
             RuleForEach(x => x.Files)
                 .Must(file => file.Length <= 2 * 1024 * 1024)
                 .WithMessage("Each file must be less than or equal to 2MB.")

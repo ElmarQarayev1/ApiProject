@@ -60,6 +60,8 @@ namespace Flower.Service.Implementations
                 Name = createDto.Name,
                 Desc = createDto.Desc,
                 Value = createDto.Value,
+                DiscountExpireDate = createDto.DiscountExpireDate,
+                DiscountPercent = createDto.DiscountPercent,
                 RoseCategories = roseCategories,
                 Pictures = new List<Picture>() 
             };
@@ -75,7 +77,7 @@ namespace Flower.Service.Implementations
 
             return rose.Id;
         }
-
+        
 
         public void Delete(int id)
         {
@@ -113,8 +115,7 @@ namespace Flower.Service.Implementations
 
             return _mapper.Map<RoseDetailsDto>(rose);
         }
-
-      
+ 
         public void Update(int id, RoseUpdateDto updateDto)
         {
             List<Category> categories = new List<Category>();
@@ -125,12 +126,10 @@ namespace Flower.Service.Implementations
             {
                 categories = _categoryRepository.GetAll(x => categoryIds.Contains(x.Id)).ToList();
             }
-
             if (categoryIds == null || categories.Count == 0)
             {
                 throw new RestException(StatusCodes.Status404NotFound, "CategoryId", "One or more categories not found by given Ids");
             }
-
             Rose rose = _roseRepository.Get(x => x.Id == id, "RoseCategories", "Pictures");
 
             if (rose == null)
@@ -149,10 +148,12 @@ namespace Flower.Service.Implementations
             rose.Name = updateDto.Name;
             rose.Desc = updateDto.Desc;
             rose.Value = updateDto.Value;
+            rose.DiscountPercent = updateDto.DiscountPercent;
+            rose.DiscountExpireDate = updateDto.DiscountExpireDate;
             rose.RoseCategories = roseCategories;
 
             List<Picture> pictures = rose.Pictures.Where(x => updateDto.ExistPictureIds.Contains(x.Id)).ToList();
-            List<Picture> removedPictures = rose.Pictures.Where(x => updateDto.RemovedPictureIds.Contains(x.Id)).ToList();
+            List<Picture> removedPictures = rose.Pictures.Where(x => !updateDto.ExistPictureIds.Contains(x.Id)).ToList();
 
             rose.Pictures = pictures;
 
@@ -174,7 +175,6 @@ namespace Flower.Service.Implementations
                 FileManager.Delete(_env.WebRootPath, "uploads/roses", item.ImageName);
             }
         }
-
 
     }
 } 

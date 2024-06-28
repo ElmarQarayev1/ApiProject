@@ -57,6 +57,16 @@
                         <span asp-validation-for="CategoryIds" class="text-danger"></span>
                     </div>
                 </div>
+                <div class="form-group">
+                    <label for="venue">DiscountPercent</label>
+                    <input asp-for="DiscountPercent" class="form-control" id="venue" placeholder=" " />
+                    <span class="text-danger" asp-validation-for="DiscountPercent"></span>
+                </div>
+                <div class="form-group">
+                    <label for="venue">DiscountExpireDate</label>
+                    <input asp-for="DiscountExpireDate" class="form-control" id="venue" placeholder=" " />
+                    <span class="text-danger" asp-validation-for="DiscountExpireDate"></span>
+                </div>
                 <label for="imgInput">Image File</label>
                 <input type="file" name="Files" class="form-control imgInput" multiple>
 
@@ -66,10 +76,15 @@
                 {
                     foreach (PictureResponse item in ViewBag.Pictures)
                     {
-                        <div class="img-box mt-3" style="display: inline-block; position: relative;">
-                            <span class="remove-img-icon" data-id="@item.Id">x</span>
+                        <div class="img-box mt-3 mr-3" style="display:inline-block;position:relative">
+                            <span style="position: absolute;
+                                  right: -9px;
+                                  top: -22px;
+                                  font-size: 28px;
+                                  color: red;
+                                  cursor: pointer" class="remove-img-icon">x</span>
                             <input type="hidden" name="ExistPictureIds" value="@item.Id" />
-                            <img width="200" class="previewImg" src="@item.Url" />
+                            <img width="200" src="@item.Url" />
                         </div>
                     }
                 }
@@ -78,57 +93,44 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
-    <script>$(document).ready(function () {
+    <script>
+        $(document).ready(function () {
             $(".imgInput").change(function (e) {
-                let box = $(this).closest('form').find(".preview-box");
-                $(box).empty();
+                let box = $(this).parent().find(".preview-box");
+                $(box).find(".img-box").remove();
 
-                Array.from(e.target.files).forEach(file => {
-                    let reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = function () {
-                        let img = $("<img>").attr("src", reader.result).addClass("previewImg").css("width", "200px");
-                        $(box).append(img);
+                for (var i = 0; i < e.target.files.length; i++) {
+                    let imgBox = document.createElement("div");
+                    imgBox.classList.add("img-box");
+
+                    let removeIcon = document.createElement("span");
+                    removeIcon.classList.add("remove-img-icon");
+                    removeIcon.textContent = "x";
+                    removeIcon.onclick = function () {
+                        $(this).parent().remove();
                     };
-                });
-            });
 
-            $(document).on('click', '.remove-img-icon', function () {
-                let imgBox = $(this).closest(".img-box");
-                let imgId = $(this).data("id");
+                    let img = document.createElement("img");
+                    img.style.width = "200px";
+                    img.classList.add("previewImg");
 
-                imgBox.remove();
-
-                let hiddenInput = $("input[name='ExistPictureIds'][value='" + imgId + "']");
-                if (hiddenInput.length) {
-                    hiddenInput.remove();
-                }
-
-                let removedPicturesInput = $("input[name='RemovedPictureIds']");
-                if (removedPicturesInput.length) {
-                    let removedPictureIds = removedPicturesInput.val().split(',').filter(id => id !== '');
-                    removedPictureIds.push(imgId);
-                    removedPicturesInput.val(removedPictureIds.join(','));
-                } else {
-                    $("<input>").attr({
-                        type: "hidden",
-                        name: "RemovedPictureIds",
-                        value: imgId
-                    }).appendTo("form");
+                    let reader = new FileReader();
+                    reader.readAsDataURL(e.target.files[i]);
+                    reader.onload = () => {
+                        img.setAttribute("src", reader.result);
+                        imgBox.appendChild(img);
+                        imgBox.appendChild(removeIcon);
+                        box.append(imgBox);
+                    }
                 }
             });
 
-            $("form").submit(function () {
-               
-                let removedPicturesInput = $("input[name='RemovedPictureIds']");
-                if (removedPicturesInput.length) {
-                    let removedPictureIds = removedPicturesInput.val().split(',').filter(id => id !== '');
-                    removedPicturesInput.val(removedPictureIds.join(','));
-                }
+            $(".remove-img-icon").click(function () {
+                $(this).parent().remove();
             });
-        });</script>
+        });
+    </script>
 }

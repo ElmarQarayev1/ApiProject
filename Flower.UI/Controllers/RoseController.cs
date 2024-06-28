@@ -27,7 +27,6 @@ namespace Flower.UI.Controllers
             try
             {
        
-
                 return View(await _crudService.GetAllPaginated<RoseListItemGetResponse>("roses", page, size));
                 
             }
@@ -45,11 +44,9 @@ namespace Flower.UI.Controllers
             catch (System.Exception e)
             {
                 throw;
-            }
-          
+            }         
 
         }
-
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -93,8 +90,7 @@ namespace Flower.UI.Controllers
                 return View();
             }
         }
-
-       
+      
         public async Task<IActionResult> Edit(int id)
         {
             var rose = await _crudService.Get<RoseGetResponse>("roses/" + id);
@@ -109,6 +105,8 @@ namespace Flower.UI.Controllers
                 Name = rose.Name,
                 Desc = rose.Desc,
                 Value = rose.Value,
+                DiscountPercent=rose.DiscountPercent,
+                DiscountExpireDate=rose.DiscountExpireDate,
                 CategoryIds = rose.CategoryIds,
               
                 FileUrls = rose.Pictures
@@ -120,7 +118,6 @@ namespace Flower.UI.Controllers
 
             return View(roseEdit);
         }
-
 
         [HttpPost]
         public async Task<IActionResult> Edit(int id, RoseEditRequest editRequest)
@@ -137,10 +134,12 @@ namespace Flower.UI.Controllers
                     Name = editRequest.Name,
                     Value = editRequest.Value,
                     Desc = editRequest.Desc,
+                    DiscountPercent=editRequest.DiscountPercent,
+                    DiscountExpireDate=editRequest.DiscountExpireDate,
                     CategoryIds = editRequest.CategoryIds,
                     Files = editRequest.Files ?? new List<IFormFile>(),
                     ExistPictureIds = editRequest.ExistPictureIds,
-                    RemovedPictureIds = editRequest.RemovedPictureIds
+                   
                 };
 
                 await _crudService.EditFromForm(updateDto, $"roses/{id}");
@@ -155,7 +154,6 @@ namespace Flower.UI.Controllers
                 return View(editRequest);
             }
         }
-
 
         private async Task<List<CategoryListItemGetResponse>> getCategories()
         {

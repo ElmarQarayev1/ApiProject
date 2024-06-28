@@ -18,6 +18,10 @@ namespace Flower.UI.Models
         [Required]
         public double Value { get; set; }
 
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
+
         public List<int> ExistPictureIds { get; set; } = new List<int>();
 
         [JsonIgnore]
@@ -25,7 +29,7 @@ namespace Flower.UI.Models
 
         public List<IFormFile>? Files { get; set; }
 
-        public List<int> RemovedPictureIds { get; set; } = new List<int>();
+      
     }
 }
 

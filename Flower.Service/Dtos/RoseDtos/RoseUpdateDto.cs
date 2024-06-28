@@ -16,13 +16,14 @@ namespace Flower.Service.Dtos.RoseDtos
 
         public List<IFormFile> Files { get; set; } = new List<IFormFile>();
 
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
+
         public List<int>? CategoryIds { get; set; }
 
         public List<int>? ExistPictureIds { get; set; } = new List<int>();
-
-        public List<int>? RemovedPictureIds { get; set; } = new List<int>();
-
-
+  
     }
 
     public class RoseUpdateDtoValidator : AbstractValidator<RoseUpdateDto>
@@ -35,6 +36,11 @@ namespace Flower.Service.Dtos.RoseDtos
 
             RuleFor(x => x.Desc).NotEmpty().MaximumLength(200);
 
+            RuleFor(x => x.DiscountPercent).NotEmpty().GreaterThan(0);
+
+            RuleFor(x => x.DiscountExpireDate)
+               .GreaterThanOrEqualTo(DateTime.Now)
+               .WithMessage("DiscountExpireDate cannot be earlier than today's date.");
 
             RuleForEach(x => x.Files)
                            .Must(file => file.Length <= 2 * 1024 * 1024)

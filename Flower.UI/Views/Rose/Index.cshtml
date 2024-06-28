@@ -22,6 +22,9 @@
                         <th scope="col">Name</th>
                         <th scope="col">Desc</th>
                         <th scope="col">Value</th>
+                        <th scope="col">DiscountPercent</th>
+                        <th scope="col">DisExpireDate</th>
+
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -32,6 +35,8 @@
                             <th scope="row">@item.Id</th>
                             <td>@item.Name</td>
                             <td>@item.Desc</td>
+                            <td>@item.DiscountPercent</td>
+                            <td>@item.DiscountExpireDate.ToString("dd-MM-yyyy")</td>
 
                             <td>@item.Value</td>
                             <td>

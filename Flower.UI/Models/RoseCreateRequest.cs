@@ -11,6 +11,10 @@ namespace Flower.UI.Models
 
         public  string Desc { get; set; }
 
+        public double DiscountPercent { get; set; }
+
+        public DateTime DiscountExpireDate { get; set; }
+
         public List<IFormFile> Files { get; set; }
     }
 }
