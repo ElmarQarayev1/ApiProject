@@ -4,10 +4,12 @@ using Flower.Service.Dtos.CategoryDtos;
 using Flower.Service.Dtos.RoseDtos;
 using Flower.Service.Implementations;
 using Flower.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flower.Api.Controllers
 {
+    [Authorize(Roles = "Admin,Member")]
     [Route("api/[controller]")]
     [ApiController]
     public class RosesController:ControllerBase

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Flower.Api.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin,Member")]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase

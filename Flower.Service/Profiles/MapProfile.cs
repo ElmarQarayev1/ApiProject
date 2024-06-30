@@ -46,11 +46,10 @@ namespace Flower.Service.Profiles
 
             CreateMap<Rose, RoseGetDto>().ReverseMap();
 
+
             CreateMap<Rose, RosePaginatedGet>().
                 ForMember(dest => dest.CategoryIds, opt => opt.MapFrom(src => src.RoseCategories.Select(rc => rc.CategoryId).ToList()));
-
-
-
+               
 
 
 
