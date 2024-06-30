@@ -11,15 +11,19 @@ using Flower.Service.Interfaces;
 using Flower.Service.Profiles;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Hangfire.SqlServer;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 
 
@@ -62,6 +66,9 @@ builder.Services.AddSingleton(provider => new MapperConfiguration(cf =>
 {
     cf.AddProfile(new MapProfile(provider.GetService<IHttpContextAccessor>()));
 }).CreateMapper());
+
+
+
 
 
 
@@ -157,6 +164,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+
+
+//app.UseHangfireDashboard(); 
+//app.UseHangfireServer(); 
 
 app.UseStaticFiles();
 

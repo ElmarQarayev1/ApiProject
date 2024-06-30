@@ -2,15 +2,16 @@
 using Flower.Service.Dtos;
 using Flower.Service.Dtos.CategoryDtos;
 using Flower.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Flower.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-
         private readonly ICategoryService _categoryService;
 
         public CategoriesController(ICategoryService categoryService)

@@ -6,7 +6,7 @@ namespace Flower.Data.Repositories.Interfaces
 {
 	public interface IRoseRepository : IRepository<Rose>
     {
-
-	}
+        
+    }
 }
 

@@ -24,6 +24,8 @@ namespace Flower.Data
 
         public DbSet<RoseCategory> RoseCategories { get; set; }
 
+        public DbSet<Subscriber> Subscribers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfiguration(new CategoryConfiguration());
