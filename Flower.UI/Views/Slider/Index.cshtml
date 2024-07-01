@@ -1,5 +1,6 @@
 ﻿@model PaginatedResponse<SliderListItemGetResponse>
 @{
+    var order = 0;
     ViewData["Title"] = "Index";
 }
 
@@ -30,7 +31,7 @@
                     @foreach (var item in Model.Items)
                     {
                         <tr>
-                            <th scope="row">@item.Id</th>
+                            <th scope="row">@(++order)</th>
                             <td>@item.Title</td>
                             <td>@item.Desc</td>
                             <td>@item.Order</td>

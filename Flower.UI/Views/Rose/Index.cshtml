@@ -1,5 +1,6 @@
 ﻿@model PaginatedResponse<RoseListItemGetResponse>
 @{
+    var order = 0;
     ViewData["Title"] = "Index";
 }
 
@@ -32,7 +33,7 @@
                     @foreach (var item in Model.Items)
                     {
                         <tr>
-                            <th scope="row">@item.Id</th>
+                            <th scope="row">@(++order)</th>
                             <td>@item.Name</td>
                             <td>@item.Desc</td>
                             <td>@item.DiscountPercent</td>
