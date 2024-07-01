@@ -36,10 +36,11 @@
                             <th scope="row">@(++order)</th>
                             <td>@item.Name</td>
                             <td>@item.Desc</td>
-                            <td>@item.DiscountPercent</td>
+                            <td>@item.Value</td>
+                            <td>@item.DiscountPercent%</td>
                             <td>@item.DiscountExpireDate.ToString("dd-MM-yyyy")</td>
 
-                            <td>@item.Value</td>
+                          
                             <td>
                                 <a class="btn btn-warning" asp-action="edit" asp-route-id="@item.Id">Edit</a>
                                 <a class="btn btn-danger delete-btn" asp-action="delete" asp-route-id="@item.Id">Delete</a>
