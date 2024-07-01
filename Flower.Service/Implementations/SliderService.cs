@@ -68,8 +68,9 @@ namespace Flower.Service.Implementations
             _sliderRepository.Delete(entity);
 
             _sliderRepository.Save();
-        }
+            FileManager.Delete(_env.WebRootPath, "uploads/sliders", entity.ImageName);
 
+        }
 
         public List<SliderGetDto> GetAll(string? search = null)
         {
@@ -121,7 +122,7 @@ namespace Flower.Service.Implementations
             }
 
 
-          
+      
             string deletedFile = slider.ImageName;
             
             if (!string.IsNullOrEmpty(updateDto.Title))
