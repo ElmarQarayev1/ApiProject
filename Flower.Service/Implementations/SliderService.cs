@@ -30,8 +30,8 @@ namespace Flower.Service.Implementations
 			_sliderRepository = sliderRepository;
 			_mapper = mapper;
 			_env = env;
-
 		}
+
         public int Create(SliderCreateDto createDto)
         {
             var validator = new SliderCreateDtoValidator();

@@ -20,7 +20,6 @@ namespace Flower.Api.Controllers
             _sliderService = sliderService;
         }
 
-
         [HttpPost("")]
         public ActionResult Create([FromForm] SliderCreateDto createDto)
         {
