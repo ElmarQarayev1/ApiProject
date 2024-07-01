@@ -18,13 +18,13 @@
             <form class="user" asp-action="create" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="FullNameInput">Title</label>
-                    <input asp-for="Title" class="form-control" id="FullNameInput" placeholder="Enter Title here..">
+                    <input asp-for="Title" class="form-control" id="FullNameInput" placeholder="">
                     <span class="text-danger" asp-validation-for="Title"></span>
                 </div>
 
                 <div class="form-group">
                     <label for="EmailInput">Description</label>
-                    <textarea asp-for="Desc" class="form-control" id="EmailInput" placeholder="Enter Description here.."></textarea>
+                    <textarea asp-for="Desc" class="form-control" id="EmailInput" placeholder=""></textarea>
                     <span class="text-danger" asp-validation-for="Desc"></span>
                 </div>
 
