@@ -12,6 +12,7 @@ namespace Flower.Service.Interfaces
         RoseDetailsDto GetById(int id);
         void Update(int id, RoseUpdateDto updateDto);
         void Delete(int id);
+       
     }
 }
 

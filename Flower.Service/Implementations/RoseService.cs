@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 
 namespace Flower.Service.Implementations
@@ -115,7 +116,8 @@ namespace Flower.Service.Implementations
 
             return _mapper.Map<RoseDetailsDto>(rose);
         }
- 
+
+
         public void Update(int id, RoseUpdateDto updateDto)
         {
             List<Category> categories = new List<Category>();

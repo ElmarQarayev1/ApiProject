@@ -23,13 +23,14 @@ namespace Flower.Api.Controllers
         public ActionResult Create(CategoryCreateDto createDto)
         {
             return StatusCode(201, new { Id = _categoryService.Create(createDto) });
-
         }
+
         [HttpGet("")]
         public ActionResult<PaginatedList<CategoryGetDto>> GetAll(string? search = null, int page = 1, int size = 10)
         {
             return StatusCode(200, _categoryService.GetAllByPage(search, page, size));
         }
+
         [HttpGet("all")]
         public ActionResult<List<CategoryGetDto>> GetAll()
         {

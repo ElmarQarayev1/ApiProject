@@ -72,7 +72,8 @@ namespace Flower.Service.Profiles
             CreateMap<Slider, SliderGetDto>()
                 .ForMember(dest => dest.File, opt => opt.MapFrom(src => baseUrl + "/uploads/sliders/" + src.ImageName));
 
-           
+
+
         }
     }
 

@@ -11,7 +11,6 @@ using Flower.Service.Interfaces;
 using Flower.Service.Profiles;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +20,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Hangfire.SqlServer;
+using Quartz;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Flower.Api.Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,21 @@ builder.Services.AddControllers().ConfigureApiBehaviorOptions(options =>
 
 
 
+builder.Services.AddQuartz(options =>
+{
+    var key = JobKey.Create(nameof(PrintJob));
+    options.AddJob(typeof(PrintJob), key).AddTrigger(x => x.ForJob(key).WithCronSchedule("0 0 8 * * ?").StartNow());
+});
+
+
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+    options.AwaitApplicationStarted = true;
+});
+
+
+
 builder.Services.AddIdentity<AppUser, IdentityRole>(opt =>
 {
     opt.Password.RequireNonAlphanumeric = false;
@@ -60,7 +76,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddHttpContextAccessor();
+
+
+
+
 
 builder.Services.AddSingleton(provider => new MapperConfiguration(cf =>
 {
@@ -73,7 +92,7 @@ builder.Services.AddSingleton(provider => new MapperConfiguration(cf =>
 
 
 
-
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IRoseService, RoseService>();
 builder.Services.AddScoped<IRoseRepository, RoseRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
@@ -83,6 +102,8 @@ builder.Services.AddScoped<ISliderRepository, SliderRepository>();
 builder.Services.AddScoped<ISliderService, SliderService>();
 
 
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(opt =>
 {
@@ -98,8 +119,6 @@ builder.Services.AddAuthentication(opt =>
         IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
     };
 });
-
-
 
 
 
@@ -167,8 +186,8 @@ app.UseAuthorization();
 
 
 
-//app.UseHangfireDashboard(); 
-//app.UseHangfireServer(); 
+
+
 
 app.UseStaticFiles();
 
